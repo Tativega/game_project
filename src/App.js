@@ -1,14 +1,10 @@
-import React from 'react';
-
+import React from "react";
+import Container from "./components/Body/Container";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-         GAME PROJECT
-        </p>
-      </header>
+    <div>
+    <Container></Container>
     </div>
   );
 }
