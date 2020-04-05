@@ -3,10 +3,10 @@ import React from 'react';
 
 function App() {
   return (
-    <div>
-      <header>
+    <div className="App">
+      <header className="App-header">
         <p>
-          GAME PROJECT
+         GAME PROJECT
         </p>
       </header>
     </div>
