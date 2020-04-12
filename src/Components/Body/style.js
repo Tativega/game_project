@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 
 export const BannerStyled = styled.div`
-background-color: white;
 borders: solid 2px grey;
-
 height: 300px;
 width: 100vw;
 `
