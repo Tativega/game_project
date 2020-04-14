@@ -1,8 +1,8 @@
 import React from "react";
 import { SingleStyled } from "./style";
 
-function Single() {
-  return <SingleStyled/>;
+function Single( {text} ) {
+  return <SingleStyled> {text} </SingleStyled>;
 }
 
 export default Single;
