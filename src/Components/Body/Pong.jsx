@@ -104,7 +104,7 @@ const Pong = () => {
 
         ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.rect(canvas.width-50, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
+        ctx.rect(canvas.width-50-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
         ctx.fill();
         ctx.closePath();
     }
