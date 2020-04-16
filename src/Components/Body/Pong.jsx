@@ -16,6 +16,20 @@ const Pong = () => {
         radius: 5, 
     });
 
+    const refPaddlePlayer1 = useRef({
+        y: 240,
+        height: 50,
+        width: 10,
+        velocity: 1,
+    })
+
+    const refPaddlePlayer2 = useRef({
+        y: 240,
+        height: 50,
+        width: 10,
+        velocity: 1,
+    })
+
     useEffect( () => {
 
         window.requestAnimationFrame(gameLoop)
@@ -57,12 +71,10 @@ const Pong = () => {
     const draw = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        const ball = refBall.current;
 
         //Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-
         //Draw the middle segmented line
         ctx.strokeStyle = "white";
         ctx.lineWidth = 10;
@@ -73,10 +85,28 @@ const Pong = () => {
         ctx.stroke();
 
         //Draw the ball
-        ctx.fillStyle = 'white';
+        const ball = refBall.current;
+
+        ctx.fillStyle = "white";
         ctx.beginPath();
         ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
         ctx.fill();
+
+        //Draw the paddles
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        const paddlePlayer2 = refPaddlePlayer2.current;
+
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.rect(50, paddlePlayer1.y-paddlePlayer1.height/2, paddlePlayer1.width, paddlePlayer1.height);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.rect(canvas.width-50, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
+        ctx.fill();
+        ctx.closePath();
     }
 
     return(
