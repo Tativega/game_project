@@ -20,14 +20,41 @@ const Pong = () => {
         y: 240,
         height: 50,
         width: 10,
-        velocity: 1,
+        velocity: 5,
     })
 
     const refPaddlePlayer2 = useRef({
         y: 240,
         height: 50,
         width: 10,
-        velocity: 1,
+        velocity: 5,
+    })
+
+    const keys = {
+        player1Up: "ArrowUp",
+        player1Down: "ArrowDown",
+    }
+
+    const WINDOW_WIDTH = 640;
+    const WINDOW_HEIGHT = 480;
+
+    window.addEventListener("keydown", (event) => {
+        const paddlePlayer1 = refPaddlePlayer1.current;
+
+        switch(event.key) {
+            case keys.player1Up:
+                if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                    paddlePlayer1.y -= paddlePlayer1.velocity;
+                }
+                break;
+            case keys.player1Down:
+                if(paddlePlayer1.y + paddlePlayer1.height/2 < WINDOW_HEIGHT){
+                    paddlePlayer1.y += paddlePlayer1.velocity;
+                }
+                break;
+            default:
+                break;
+        }
     })
 
     useEffect( () => {
@@ -111,7 +138,7 @@ const Pong = () => {
 
     return(
         <div>
-            <canvas ref={canvasRef} width={640} height={480} style={{border:"1px solid white"}}/>
+            <canvas ref={canvasRef} width={WINDOW_WIDTH} height={WINDOW_HEIGHT} style={{border:"1px solid white"}}/>
         </div>
     ) 
 }
