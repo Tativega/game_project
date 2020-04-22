@@ -1,5 +1,8 @@
 import React, {useEffect, useRef} from "react";
 
+import {WINDOW_WIDTH} from "../../Pong/constants";
+import {WINDOW_HEIGHT} from "../../Pong/constants";
+
 const Pong = () => {
 
     const canvasRef = useRef(null);
@@ -10,8 +13,8 @@ const Pong = () => {
             y: 240,
         },
         velocity: {
-            x: 1,
-            y: 1,
+            x: 2,
+            y: 2,
         },
         radius: 5, 
     });
@@ -34,9 +37,6 @@ const Pong = () => {
         player1Up: "ArrowUp",
         player1Down: "ArrowDown",
     }
-
-    const WINDOW_WIDTH = 640;
-    const WINDOW_HEIGHT = 480;
 
     window.addEventListener("keydown", (event) => {
         const paddlePlayer1 = refPaddlePlayer1.current;
@@ -83,14 +83,14 @@ const Pong = () => {
         const ball = refBall.current;
 
         //Top and bottom collision
-        if(ball.position.y + ball.radius === canvas.height || 
-            ball.position.y - ball.radius === 0){
+        if(ball.position.y + ball.radius >= canvas.height || 
+            ball.position.y - ball.radius <= 0){
             ball.velocity.y = -ball.velocity.y;
         }
 
         //Left and Right wall collision
-        if(ball.position.x + ball.radius === canvas.width || 
-            ball.position.x - ball.radius === 0){
+        if(ball.position.x + ball.radius >= canvas.width || 
+            ball.position.x - ball.radius <= 0){
             ball.velocity.x = -ball.velocity.x;
         }
     }
