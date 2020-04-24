@@ -82,7 +82,7 @@ function Banner() {
                 enable: true,
                 mode: "push",
               },
-              resize: false,
+              resize: true,
             },
             modes: {
               grab: {
