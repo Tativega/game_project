@@ -7,6 +7,7 @@ const Pong = () => {
 
     const canvasRef = useRef(null);
 
+
     const refBall = useRef({
         position: {
             x: 320,
@@ -137,8 +138,8 @@ const Pong = () => {
     }
 
     return(
-        <div>
-            <canvas ref={canvasRef} width={WINDOW_WIDTH} height={WINDOW_HEIGHT} style={{border:"1px solid white"}}/>
+        <div id="pong">
+            <canvas ref={canvasRef} width={WINDOW_WIDTH} height={WINDOW_HEIGHT}/>
         </div>
     ) 
 }
