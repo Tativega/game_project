@@ -7,11 +7,17 @@ const Pong = () => {
 
     const canvasRef = useRef(null);
 
+    const refGame = useRef({
+        score: {
+            player1 : 0,
+            player2 : 0,
+        },
+    })
 
     const refBall = useRef({
         position: {
-            x: 320,
-            y: 240,
+            x: WINDOW_WIDTH / 2,
+            y: WINDOW_HEIGHT / 2,
         },
         velocity: {
             x: 2,
@@ -21,14 +27,14 @@ const Pong = () => {
     });
 
     const refPaddlePlayer1 = useRef({
-        y: 240,
+        y: WINDOW_HEIGHT / 2,
         height: 50,
         width: 10,
         velocity: 5,
     })
 
     const refPaddlePlayer2 = useRef({
-        y: 240,
+        y: WINDOW_HEIGHT / 2,
         height: 50,
         width: 10,
         velocity: 5,
@@ -73,10 +79,24 @@ const Pong = () => {
 
     const update = () => {
         const ball = refBall.current;
+        const score = refGame.current.score;
 
         //Update ball position
         ball.position.x += ball.velocity.x;
         ball.position.y += ball.velocity.y;
+
+        //Update score and reset ball position and velocity
+        if(ball.position.x === 0){
+            score.player2++;
+            ball.position.x = WINDOW_WIDTH / 2;
+            ball.position.y = WINDOW_HEIGHT / 2;
+        }
+
+        if(ball.position.x === WINDOW_WIDTH){
+            score.player1++;
+            ball.position.x = WINDOW_WIDTH / 2;
+            ball.position.y = WINDOW_HEIGHT / 2;
+        }
     }
 
     const detectCollision = () => {
@@ -89,11 +109,6 @@ const Pong = () => {
             ball.velocity.y = -ball.velocity.y;
         }
 
-        //Left and Right wall collision
-        if(ball.position.x + ball.radius >= canvas.width || 
-            ball.position.x - ball.radius <= 0){
-            ball.velocity.x = -ball.velocity.x;
-        }
     }
 
     const draw = () => {
@@ -111,6 +126,13 @@ const Pong = () => {
         ctx.moveTo(canvas.width/2, 0);
         ctx.lineTo(canvas.width/2, canvas.height);
         ctx.stroke();
+
+        //Draw score
+        const score = refGame.current.score;
+
+        ctx.font = "30px Arial";
+        ctx.fillText(score.player1, WINDOW_WIDTH / 2 - 70 , 50);
+        ctx.fillText(score.player2, WINDOW_WIDTH / 2 + 50 , 50);
 
         //Draw the ball
         const ball = refBall.current;
