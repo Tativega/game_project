@@ -47,6 +47,7 @@ const Pong = () => {
 
     window.addEventListener("keydown", (event) => {
         const paddlePlayer1 = refPaddlePlayer1.current;
+        const paddlePlayer2 = refPaddlePlayer2.current;
 
         switch(event.key) {
             case keys.player1Up:
@@ -102,11 +103,26 @@ const Pong = () => {
     const detectCollision = () => {
         const canvas = canvasRef.current;
         const ball = refBall.current;
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        const paddlePlayer2 = refPaddlePlayer2.current;
 
         //Top and bottom collision
         if(ball.position.y + ball.radius >= canvas.height || 
             ball.position.y - ball.radius <= 0){
             ball.velocity.y = -ball.velocity.y;
+        }
+
+        //Paddle collision
+        if(ball.position.x + ball.radius <= 50 + paddlePlayer1.width * 2 &&
+            ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
+            ball.position.y + ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
+                ball.velocity.x = -ball.velocity.x;
+        }
+
+        if(ball.position.x + ball.radius > canvas.width - 50 - paddlePlayer2.width * 2 &&
+            ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
+            ball.position.y + ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
+                ball.velocity.x = -ball.velocity.x;
         }
 
     }
