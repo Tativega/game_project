@@ -106,6 +106,17 @@ const Pong = () => {
             ball.velocity.x = velocity * Math.cos(angle);
             ball.velocity.y = sign * velocity * Math.sin(angle);
         }
+
+        //Check if winning condition achieved;
+        if(score.player1 > 10 && score.player1 > score.player2 + 1){
+            score.player1 = 0;
+            score.player2 = 0;
+        }
+
+        if(score.player2 > 10 && score.player2 > score.player1 + 1){
+            score.player1 = 0;
+            score.player2 = 0;
+        }
     }
 
     const detectCollision = () => {
