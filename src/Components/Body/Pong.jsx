@@ -20,8 +20,8 @@ const Pong = () => {
             y: WINDOW_HEIGHT / 2,
         },
         velocity: {
-            x: 2,
-            y: 2,
+            x: -2,
+            y: -2,
         },
         radius: 5, 
     });
@@ -30,14 +30,14 @@ const Pong = () => {
         y: WINDOW_HEIGHT / 2,
         height: 50,
         width: 10,
-        velocity: 5,
+        velocity: 10,
     })
 
     const refPaddlePlayer2 = useRef({
         y: WINDOW_HEIGHT / 2,
         height: 50,
         width: 10,
-        velocity: 5,
+        velocity: 10,
     })
 
     const keys = {
@@ -87,16 +87,24 @@ const Pong = () => {
         ball.position.y += ball.velocity.y;
 
         //Update score and reset ball position and velocity
-        if(ball.position.x === 0){
+        const angle = Math.PI / 4;
+        const velocity = 3;
+        const sign = Math.random()<0.5 ? -1 : 1;
+
+        if(ball.position.x <= 0){
             score.player2++;
             ball.position.x = WINDOW_WIDTH / 2;
             ball.position.y = WINDOW_HEIGHT / 2;
+            ball.velocity.x = -velocity * Math.cos(angle);
+            ball.velocity.y = sign * velocity * Math.sin(angle);
         }
 
-        if(ball.position.x === WINDOW_WIDTH){
+        if(ball.position.x >= WINDOW_WIDTH){
             score.player1++;
             ball.position.x = WINDOW_WIDTH / 2;
             ball.position.y = WINDOW_HEIGHT / 2;
+            ball.velocity.x = velocity * Math.cos(angle);
+            ball.velocity.y = sign * velocity * Math.sin(angle);
         }
     }
 
