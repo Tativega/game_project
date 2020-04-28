@@ -40,6 +40,11 @@ const Pong = () => {
         velocity: 10,
     })
 
+    const refWinCondition = useRef({
+        gameOver : false,
+        winner:"",
+    })
+
     const keys = {
         player1Up: "ArrowUp",
         player1Down: "ArrowDown",
@@ -81,6 +86,7 @@ const Pong = () => {
     const update = () => {
         const ball = refBall.current;
         const score = refGame.current.score;
+        const winCondition = refWinCondition.current;
 
         //Update ball position
         ball.position.x += ball.velocity.x;
@@ -105,6 +111,21 @@ const Pong = () => {
             ball.position.y = WINDOW_HEIGHT / 2;
             ball.velocity.x = velocity * Math.cos(angle);
             ball.velocity.y = sign * velocity * Math.sin(angle);
+        }
+
+        //Check if winning condition achieved;
+        if(score.player1 > 10 && score.player1 > score.player2 + 1){
+            winCondition.gameOver = true;
+            winCondition.winner = "Player 1";
+            ball.velocity.x = 0;
+            ball.velocity.y = 0;
+        }
+
+        if(score.player2 > 10 && score.player2 > score.player1 + 1){
+            winCondition.gameOver = true;
+            winCondition.winner = "Player 2";
+            ball.velocity.x = 0;
+            ball.velocity.y = 0;
         }
     }
 
@@ -138,19 +159,21 @@ const Pong = () => {
     const draw = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
+        const winCondition = refWinCondition.current;
 
         //Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         //Draw the middle segmented line
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 10;
-        ctx.setLineDash([20, 15]);
-        ctx.beginPath();
-        ctx.moveTo(canvas.width/2, 0);
-        ctx.lineTo(canvas.width/2, canvas.height);
-        ctx.stroke();
-
+        if(!winCondition.gameOver){
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 10;
+            ctx.setLineDash([20, 15]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.stroke();
+        }
         //Draw score
         const score = refGame.current.score;
 
@@ -159,12 +182,14 @@ const Pong = () => {
         ctx.fillText(score.player2, WINDOW_WIDTH / 2 + 50 , 50);
 
         //Draw the ball
-        const ball = refBall.current;
+        if(!winCondition.gameOver){
+            const ball = refBall.current;
 
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
-        ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
+            ctx.fill();
+        }
 
         //Draw the paddles
         const paddlePlayer1 = refPaddlePlayer1.current;
@@ -181,6 +206,12 @@ const Pong = () => {
         ctx.rect(canvas.width-50-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
         ctx.fill();
         ctx.closePath();
+
+        //Game over
+        if(winCondition.gameOver){
+            ctx.font = "60px Arial";
+            ctx.fillText(winCondition.winner + " wins!", WINDOW_WIDTH / 6, WINDOW_HEIGHT / 2);
+        }
     }
 
     return(
