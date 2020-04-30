@@ -53,6 +53,38 @@ const Pong = () => {
     window.addEventListener("keydown", (event) => {
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
+        const gameOver = refWinCondition.current.gameOver;
+
+        if(gameOver){
+            // resetting the game
+            refGame.current = {
+                score: {
+                    player1 : 0,
+                    player2 : 0,
+                },
+            };
+
+            refBall.current = {
+                position: {
+                    x: WINDOW_WIDTH / 2,
+                    y: WINDOW_HEIGHT / 2,
+                },
+                velocity: {
+                    x: -2,
+                    y: -2,
+                },
+                radius: 5, 
+            };
+
+            refPaddlePlayer1.current.y = WINDOW_HEIGHT / 2;
+            refPaddlePlayer2.current.y = WINDOW_HEIGHT / 2;
+
+            refWinCondition.current = {
+                gameOver : false,
+                winner:"",
+            }
+        }
+        
 
         switch(event.key) {
             case keys.player1Up:
