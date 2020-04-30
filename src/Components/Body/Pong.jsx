@@ -1,7 +1,6 @@
 import React, {useEffect, useRef} from "react";
 
-import {WINDOW_WIDTH} from "../../Pong/constants";
-import {WINDOW_HEIGHT} from "../../Pong/constants";
+import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING} from "../../Pong/constants";
 
 const Pong = () => {
 
@@ -28,15 +27,15 @@ const Pong = () => {
 
     const refPaddlePlayer1 = useRef({
         y: WINDOW_HEIGHT / 2,
-        height: 50,
-        width: 10,
+        height: PADDLE_HEIGHT,
+        width: PADDLE_WIDTH,
         velocity: 10,
     })
 
     const refPaddlePlayer2 = useRef({
         y: WINDOW_HEIGHT / 2,
-        height: 50,
-        width: 10,
+        height: PADDLE_HEIGHT,
+        width: PADDLE_WIDTH,
         velocity: 10,
     })
 
@@ -142,16 +141,20 @@ const Pong = () => {
         }
 
         //Paddle collision
-        if(ball.position.x + ball.radius <= 50 + paddlePlayer1.width * 2 &&
+        if(ball.position.x - ball.radius <= PADDLE_PADDING + paddlePlayer1.width &&
+            ball.position.x + ball.radius >= PADDLE_PADDING &&
             ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
-            ball.position.y + ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
+            ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 ball.velocity.x = -ball.velocity.x;
+                ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
         }
 
-        if(ball.position.x + ball.radius > canvas.width - 50 - paddlePlayer2.width * 2 &&
+        if(ball.position.x + ball.radius >= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
+            ball.position.x - ball.radius <= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
             ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
-            ball.position.y + ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
+            ball.position.y - ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
                 ball.velocity.x = -ball.velocity.x;
+                ball.position.x = paddlePlayer2.width + ball.radius;
         }
 
     }
@@ -197,13 +200,13 @@ const Pong = () => {
 
         ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.rect(50, paddlePlayer1.y-paddlePlayer1.height/2, paddlePlayer1.width, paddlePlayer1.height);
+        ctx.rect(PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2, paddlePlayer1.width, paddlePlayer1.height);
         ctx.fill();
         ctx.closePath();
 
         ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.rect(canvas.width-50-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
+        ctx.rect(canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
         ctx.fill();
         ctx.closePath();
 
