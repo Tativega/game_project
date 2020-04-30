@@ -145,7 +145,13 @@ const Pong = () => {
             ball.position.x + ball.radius >= PADDLE_PADDING &&
             ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
-                ball.velocity.x = -ball.velocity.x;
+                const velocity = 3;
+                const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
+                const sign = paddlePlayer1 - ball.position.y >= 0 ? 1 : -1;
+                const angle = paddleZone * Math.PI / 4;
+            
+                ball.velocity.x = velocity * Math.cos(angle);
+                ball.velocity.y = sign * velocity * Math.sin(angle);
                 ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
         }
 
