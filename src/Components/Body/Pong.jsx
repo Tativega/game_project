@@ -1,6 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING} from "../../Pong/constants";
+import { drawBall, drawGameOver,  drawMiddleLine, drawPaddle, drawScore } from "../../Pong/render";
 
 const Pong = () => {
 
@@ -57,11 +58,15 @@ const Pong = () => {
             case keys.player1Up:
                 if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
                     paddlePlayer1.y -= paddlePlayer1.velocity;
+                } else {
+                    paddlePlayer1.y = paddlePlayer1.height/2;
                 }
                 break;
             case keys.player1Down:
                 if(paddlePlayer1.y + paddlePlayer1.height/2 < WINDOW_HEIGHT){
                     paddlePlayer1.y += paddlePlayer1.velocity;
+                } else {
+                    paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
                 }
                 break;
             default:
@@ -146,8 +151,12 @@ const Pong = () => {
             ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 const velocity = 3;
+                //Zone of impact on the paddle, value between 0 and 1
                 const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
+                //Is the top half of the paddle (1) or the bottom one (-1)
                 const sign = paddlePlayer1 - ball.position.y >= 0 ? 1 : -1;
+                //The angle is 45 in the extreme of the paddle (paddleZone = 1)
+                //The angle is 0 in the center of the paddle (paddleZone = 0)
                 const angle = paddleZone * Math.PI / 4;
             
                 ball.velocity.x = velocity * Math.cos(angle);
@@ -173,54 +182,25 @@ const Pong = () => {
         //Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        //Draw the middle segmented line
         if(!winCondition.gameOver){
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 10;
-            ctx.setLineDash([20, 15]);
-            ctx.beginPath();
-            ctx.moveTo(canvas.width/2, 0);
-            ctx.lineTo(canvas.width/2, canvas.height);
-            ctx.stroke();
+            //Draw the middle segmented line and ball
+            drawMiddleLine(canvas, ctx);
+            drawBall(ctx, refBall.current);
+        } else {
+            //Game over
+            drawGameOver(ctx, winCondition.winner);
         }
+
         //Draw score
-        const score = refGame.current.score;
-
-        ctx.font = "30px Arial";
-        ctx.fillText(score.player1, WINDOW_WIDTH / 2 - 70 , 50);
-        ctx.fillText(score.player2, WINDOW_WIDTH / 2 + 50 , 50);
-
-        //Draw the ball
-        if(!winCondition.gameOver){
-            const ball = refBall.current;
-
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
-            ctx.fill();
-        }
+        drawScore(ctx, refGame.current.score);
 
         //Draw the paddles
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
 
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.rect(PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2, paddlePlayer1.width, paddlePlayer1.height);
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.rect(canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
-        ctx.fill();
-        ctx.closePath();
-
-        //Game over
-        if(winCondition.gameOver){
-            ctx.font = "60px Arial";
-            ctx.fillText(winCondition.winner + " wins!", WINDOW_WIDTH / 6, WINDOW_HEIGHT / 2);
-        }
+        drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
+        
+        drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
     }
 
     return(
