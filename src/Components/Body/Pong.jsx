@@ -78,9 +78,18 @@ const Pong = () => {
         window.requestAnimationFrame(gameLoop)
     }
 
+    const paddleAuto = () => {
+        const ball = refBall.current;
+        const paddlePlayer2 = refPaddlePlayer2.current;
+        if(ball.position.x > WINDOW_WIDTH / 2) {
+            paddlePlayer2.y = ball.position.y
+        }
+    }
+
     const update = () => {
         const ball = refBall.current;
         const score = refGame.current.score;
+        paddleAuto();
 
         //Update ball position
         ball.position.x += ball.velocity.x;
