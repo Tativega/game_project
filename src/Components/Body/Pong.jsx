@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
-import {WINDOW_WIDTH} from "../../Pong/constants";
-import {WINDOW_HEIGHT} from "../../Pong/constants";
+import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING} from "../../Pong/constants";
+import { drawBall, drawGameOver,  drawMiddleLine, drawPaddle, drawScore } from "../../Pong/render";
 
 const Pong = () => {
 
@@ -28,16 +28,21 @@ const Pong = () => {
 
     const refPaddlePlayer1 = useRef({
         y: WINDOW_HEIGHT / 2,
-        height: 50,
-        width: 10,
+        height: PADDLE_HEIGHT,
+        width: PADDLE_WIDTH,
         velocity: 10,
     })
 
     const refPaddlePlayer2 = useRef({
         y: WINDOW_HEIGHT / 2,
-        height: 50,
-        width: 10,
+        height: PADDLE_HEIGHT,
+        width: PADDLE_WIDTH,
         velocity: 10,
+    })
+
+    const refWinCondition = useRef({
+        gameOver : false,
+        winner:"",
     })
 
     const keys = {
@@ -53,11 +58,15 @@ const Pong = () => {
             case keys.player1Up:
                 if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
                     paddlePlayer1.y -= paddlePlayer1.velocity;
+                } else {
+                    paddlePlayer1.y = paddlePlayer1.height/2;
                 }
                 break;
             case keys.player1Down:
                 if(paddlePlayer1.y + paddlePlayer1.height/2 < WINDOW_HEIGHT){
                     paddlePlayer1.y += paddlePlayer1.velocity;
+                } else {
+                    paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
                 }
                 break;
             default:
@@ -80,9 +89,13 @@ const Pong = () => {
 
     const paddleAuto = () => {
         const ball = refBall.current;
+
         const paddlePlayer2 = refPaddlePlayer2.current;
+
         if(ball.position.x > WINDOW_WIDTH / 2) {
             paddlePlayer2.y = ball.position.y
+        } else {
+            paddlePlayer2.y = WINDOW_HEIGHT / 2
         }
     }
 
@@ -90,6 +103,7 @@ const Pong = () => {
         const ball = refBall.current;
         const score = refGame.current.score;
         paddleAuto();
+        const winCondition = refWinCondition.current;
 
         //Update ball position
         ball.position.x += ball.velocity.x;
@@ -98,7 +112,7 @@ const Pong = () => {
         //Update score and reset ball position and velocity
         const angle = Math.PI / 4;
         const velocity = 3;
-        const sign = Math.random()<0.5 ? -1 : 1;
+        const sign = Math.random()< 0.5 ? -1 : 1;
 
         if(ball.position.x <= 0){
             score.player2++;
@@ -115,6 +129,21 @@ const Pong = () => {
             ball.velocity.x = velocity * Math.cos(angle);
             ball.velocity.y = sign * velocity * Math.sin(angle);
         }
+
+        //Check if winning condition achieved;
+        if(score.player1 > 10 && score.player1 > score.player2 + 1){
+            winCondition.gameOver = true;
+            winCondition.winner = "Player 1";
+            ball.velocity.x = 0;
+            ball.velocity.y = 0;
+        }
+
+        if(score.player2 > 10 && score.player2 > score.player1 + 1){
+            winCondition.gameOver = true;
+            winCondition.winner = "Player 2";
+            ball.velocity.x = 0;
+            ball.velocity.y = 0;
+        }
     }
 
     const detectCollision = () => {
@@ -123,6 +152,7 @@ const Pong = () => {
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
 
+
         //Top and bottom collision
         if(ball.position.y + ball.radius >= canvas.height || 
             ball.position.y - ball.radius <= 0){
@@ -130,66 +160,69 @@ const Pong = () => {
         }
 
         //Paddle collision
-        if(ball.position.x + ball.radius <= 50 + paddlePlayer1.width * 2 &&
+        if(ball.position.x - ball.radius <= PADDLE_PADDING + paddlePlayer1.width &&
+            ball.position.x + ball.radius >= PADDLE_PADDING &&
             ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
-            ball.position.y + ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
-                ball.velocity.x = -ball.velocity.x;
+            ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
+                const velocity = 3;
+                //Zone of impact on the paddle, value between 0 and 1
+                
+                const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
+        
+                //Is the top half of the paddle (1) or the bottom one (-1)
+                const sign = paddlePlayer1 - ball.position.y >= 0 ? 1 : -1;
+                //The angle is 45 in the extreme of the paddle (paddleZone = 1)
+                //The angle is 0 in the center of the paddle (paddleZone = 0)
+                const angle = paddleZone * Math.PI / 4;
+                ball.velocity.x = velocity * Math.cos(angle);
+                ball.velocity.y = sign * velocity * Math.sin(angle);
+                ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
         }
 
-        if(ball.position.x + ball.radius > canvas.width - 50 - paddlePlayer2.width * 2 &&
+        if(ball.position.x + ball.radius >= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
+            ball.position.x - ball.radius <= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
             ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
-            ball.position.y + ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
+            ball.position.y - ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
+                const paddleZone = Math.abs(paddlePlayer2.y - ball.position.y) / (paddlePlayer2.height / 2);
+              
+                
                 ball.velocity.x = -ball.velocity.x;
+                ball.position.x = paddlePlayer2.width + ball.radius;
         }
+
+      
+
+
 
     }
 
     const draw = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
+        const winCondition = refWinCondition.current;
 
         //Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        //Draw the middle segmented line
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 10;
-        ctx.setLineDash([20, 15]);
-        ctx.beginPath();
-        ctx.moveTo(canvas.width/2, 0);
-        ctx.lineTo(canvas.width/2, canvas.height);
-        ctx.stroke();
+        if(!winCondition.gameOver){
+            //Draw the middle segmented line and ball
+            drawMiddleLine(canvas, ctx);
+            drawBall(ctx, refBall.current);
+        } else {
+            //Game over
+            drawGameOver(ctx, winCondition.winner);
+        }
 
         //Draw score
-        const score = refGame.current.score;
-
-        ctx.font = "30px Arial";
-        ctx.fillText(score.player1, WINDOW_WIDTH / 2 - 70 , 50);
-        ctx.fillText(score.player2, WINDOW_WIDTH / 2 + 50 , 50);
-
-        //Draw the ball
-        const ball = refBall.current;
-
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
-        ctx.fill();
+        drawScore(ctx, refGame.current.score);
 
         //Draw the paddles
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
 
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.rect(50, paddlePlayer1.y-paddlePlayer1.height/2, paddlePlayer1.width, paddlePlayer1.height);
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.rect(canvas.width-50-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, paddlePlayer2.width, paddlePlayer2.height);
-        ctx.fill();
-        ctx.closePath();
+        drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
+        
+        drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
     }
 
     return(
