@@ -159,6 +159,7 @@ const Pong = () => {
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
                 const angle = paddleZone * Math.PI / 4;
             
+                //Coordinates calculation with module (velocity) and angle
                 ball.velocity.x = velocity * Math.cos(angle);
                 ball.velocity.y = sign * velocity * Math.sin(angle);
                 ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
