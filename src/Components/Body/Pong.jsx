@@ -219,7 +219,7 @@ const Pong = () => {
               
                 
                 ball.velocity.x = -ball.velocity.x;
-                ball.position.x = paddlePlayer2.width + ball.radius;
+                // ball.position.x = paddlePlayer2.width + ball.radius;
         }
 
       
