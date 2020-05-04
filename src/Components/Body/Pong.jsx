@@ -119,9 +119,22 @@ const Pong = () => {
         window.requestAnimationFrame(gameLoop)
     }
 
+    const paddleAuto = () => {
+        const ball = refBall.current;
+
+        const paddlePlayer2 = refPaddlePlayer2.current;
+
+        if(ball.position.x > WINDOW_WIDTH / 2) {
+            paddlePlayer2.y = ball.position.y
+        } else {
+            paddlePlayer2.y = WINDOW_HEIGHT / 2
+        }
+    }
+
     const update = () => {
         const ball = refBall.current;
         const score = refGame.current.score;
+        paddleAuto();
         const winCondition = refWinCondition.current;
 
         //Update ball position
@@ -131,7 +144,7 @@ const Pong = () => {
         //Update score and reset ball position and velocity
         const angle = Math.PI / 4;
         const velocity = 3;
-        const sign = Math.random()<0.5 ? -1 : 1;
+        const sign = Math.random()< 0.5 ? -1 : 1;
 
         if(ball.position.x <= 0){
             score.player2++;
@@ -171,6 +184,7 @@ const Pong = () => {
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
 
+
         //Top and bottom collision
         if(ball.position.y + ball.radius >= canvas.height || 
             ball.position.y - ball.radius <= 0){
@@ -184,13 +198,14 @@ const Pong = () => {
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 const velocity = 3;
                 //Zone of impact on the paddle, value between 0 and 1
+                
                 const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
+        
                 //Is the top half of the paddle (1) or the bottom one (-1)
                 const sign = paddlePlayer1 - ball.position.y >= 0 ? 1 : -1;
                 //The angle is 45 in the extreme of the paddle (paddleZone = 1)
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
                 const angle = paddleZone * Math.PI / 4;
-            
                 ball.velocity.x = velocity * Math.cos(angle);
                 ball.velocity.y = sign * velocity * Math.sin(angle);
                 ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
@@ -200,9 +215,16 @@ const Pong = () => {
             ball.position.x - ball.radius <= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
             ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
+                const paddleZone = Math.abs(paddlePlayer2.y - ball.position.y) / (paddlePlayer2.height / 2);
+              
+                
                 ball.velocity.x = -ball.velocity.x;
-                ball.position.x = paddlePlayer2.width + ball.radius;
+                // ball.position.x = paddlePlayer2.width + ball.radius;
         }
+
+      
+
+
 
     }
 
