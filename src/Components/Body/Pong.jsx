@@ -202,7 +202,7 @@ const Pong = () => {
                 const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
         
                 //Is the top half of the paddle (1) or the bottom one (-1)
-                let sign = paddlePlayer1.y - ball.position.y >= 0 ? -1 : 1;
+                const sign = paddlePlayer1.y - ball.position.y >= 0 ? -1 : 1;
                 //The angle is 45 in the extreme of the paddle (paddleZone = 1)
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
                 const angle = paddleZone * Math.PI / 4;
