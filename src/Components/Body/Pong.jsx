@@ -206,7 +206,6 @@ const Pong = () => {
                 //The angle is 45 in the extreme of the paddle (paddleZone = 1)
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
                 const angle = paddleZone * Math.PI / 4;
-                console.log(paddleZone, sign)
                 if(paddleZone > 0.9) {
                     ball.velocity.y = sign * velocity * Math.cos(angle);
                     paddlePlayer1.y > ball.position.y ? ball.position.y = paddlePlayer1.y - paddlePlayer1.height / 2 - ball.radius
