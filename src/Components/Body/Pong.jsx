@@ -202,13 +202,19 @@ const Pong = () => {
                 const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
         
                 //Is the top half of the paddle (1) or the bottom one (-1)
-                const sign = paddlePlayer1 - ball.position.y >= 0 ? 1 : -1;
+                const sign = paddlePlayer1.y - ball.position.y >= 0 ? -1 : 1;
                 //The angle is 45 in the extreme of the paddle (paddleZone = 1)
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
                 const angle = paddleZone * Math.PI / 4;
-                ball.velocity.x = velocity * Math.cos(angle);
-                ball.velocity.y = sign * velocity * Math.sin(angle);
-                ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
+                if(paddleZone > 0.9) {
+                    ball.velocity.y = sign * velocity * Math.cos(angle);
+                    paddlePlayer1.y > ball.position.y ? ball.position.y = paddlePlayer1.y - paddlePlayer1.height / 2 - ball.radius
+                                                      : ball.position.y = paddlePlayer1.y + paddlePlayer1.height / 2 + ball.radius;
+                }else{
+                    ball.velocity.x = velocity * Math.cos(angle);
+                    ball.velocity.y = sign * velocity * Math.sin(angle);
+                    ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
+                }
         }
 
         if(ball.position.x + ball.radius >= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
@@ -221,11 +227,6 @@ const Pong = () => {
                 ball.velocity.x = -ball.velocity.x;
                 // ball.position.x = paddlePlayer2.width + ball.radius;
         }
-
-      
-
-
-
     }
 
     const draw = () => {
