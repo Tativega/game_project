@@ -19,3 +19,8 @@ export const paddleAuto = (ball, paddle) => {
         }
     }
 }
+
+export const updateBall = (ball) => {
+    ball.position.x += ball.velocity.x;
+    ball.position.y += ball.velocity.y;
+}
