@@ -14,6 +14,13 @@ export const drawGameOver = (ctx, winner) => {
     ctx.fillText("Press any key to restart the game", WINDOW_WIDTH / 6, WINDOW_HEIGHT / 2 + 30);
 }
 
+export const drawMenu = (ctx) => {
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Start Game", 0.35 * WINDOW_WIDTH, WINDOW_HEIGHT / 2)
+    //ctx.rect(0.35 * WINDOW_WIDTH, 0.45 * WINDOW_HEIGHT, 153, 30); Start Game hit box
+} 
+
 export const drawMiddleLine = (canvas, ctx) => {
     ctx.strokeStyle = "white";
     ctx.lineWidth = 10;
