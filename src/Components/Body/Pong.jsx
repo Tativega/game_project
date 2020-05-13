@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING} from "../../Pong/constants";
-import { drawBall, drawGameOver,  drawMiddleLine, drawPaddle, drawScore } from "../../Pong/render";
+import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore } from "../../Pong/render";
 import { paddleAuto, updateBall } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
 
@@ -15,6 +15,7 @@ const Pong = () => {
             player2 : 0,
         },
         ballSpeed : 4,
+        screen: "menu", //menu - game - gameover
     })
 
     const refBall = useRef({
@@ -52,6 +53,23 @@ const Pong = () => {
         player1Up: "ArrowUp",
         player1Down: "ArrowDown",
     }
+
+    window.addEventListener("click", ({clientX, clientY}) => {
+        const canvas = canvasRef.current;
+        
+        if(canvas){
+            const screen = refGame.current.screen;
+            const ctx = canvas.getContext('2d');
+            const rect = ctx.canvas.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            if(screen === "menu" && x > 0.35 * WINDOW_WIDTH && x < 0.35 * WINDOW_WIDTH + 153 && y > 0.45 * WINDOW_HEIGHT && y < 0.45 * WINDOW_HEIGHT + 30){
+                //Start Game
+                refGame.current.screen = "game";
+            }
+        }
+    })
 
     window.addEventListener("keydown", (event) => {
         const paddlePlayer1 = refPaddlePlayer1.current;
@@ -115,8 +133,10 @@ const Pong = () => {
     },[])
 
     const gameLoop = (timestamp) => {
-        update();
-        detectCollision();
+        if(refGame.current.screen === "game"){
+            update();
+            detectCollision();
+        }
         draw();
 
         window.requestAnimationFrame(gameLoop)
@@ -198,23 +218,17 @@ const Pong = () => {
             ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
-                
-                const paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
-        
+
+                let paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
+                let addedSpeed = paddleZone * 15
                 //Is the top half of the paddle (1) or the bottom one (-1)
                 const sign = paddlePlayer1.y - ball.position.y >= 0 ? -1 : 1;
                 //The angle is 45 in the extreme of the paddle (paddleZone = 1)
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
-                const angle = paddleZone * Math.PI / 4;
-                if(paddleZone > 0.9) {
-                    ball.velocity.y = sign * velocity * Math.cos(angle);
-                    paddlePlayer1.y > ball.position.y ? ball.position.y = paddlePlayer1.y - paddlePlayer1.height / 2 - ball.radius
-                                                      : ball.position.y = paddlePlayer1.y + paddlePlayer1.height / 2 + ball.radius;
-                }else{
-                    ball.velocity.x = velocity * Math.cos(angle);
-                    ball.velocity.y = sign * velocity * Math.sin(angle);
-                    ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
-                }
+                let angle = paddleZone * Math.PI / 2.5;
+                ball.velocity.x = (speed + addedSpeed) * Math.cos(angle);
+                ball.velocity.y = sign * speed * Math.sin(angle);
+                ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
         }
 
         if(ball.position.x - ball.radius <= WINDOW_WIDTH - PADDLE_PADDING &&
@@ -239,30 +253,59 @@ const Pong = () => {
     const draw = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
+        const screen = refGame.current.screen;
         const winCondition = refWinCondition.current;
 
         //Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        if(!winCondition.gameOver){
-            //Draw the middle segmented line and ball
-            drawMiddleLine(canvas, ctx);
-            drawBall(ctx, refBall.current);
-        } else {
-            //Game over
-            drawGameOver(ctx, winCondition.winner);
+        switch(screen){
+            case "menu":
+                drawMenu(ctx);
+                break;
+            case "game":
+                //Draw the middle segmented line and ball
+                drawMiddleLine(canvas, ctx);
+                drawBall(ctx, refBall.current);
+
+                //Draw score
+                drawScore(ctx, refGame.current.score);
+
+                //Draw the paddles
+                const paddlePlayer1 = refPaddlePlayer1.current;
+                const paddlePlayer2 = refPaddlePlayer2.current;
+
+                drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
+                
+                drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
+
+                break;
+            case "gameOver":
+                drawGameOver(ctx, winCondition.winner);
+                break
+            default:
+                break;
         }
 
-        //Draw score
-        drawScore(ctx, refGame.current.score);
+        // if(!winCondition.gameOver){
+        //     //Draw the middle segmented line and ball
+        //     drawMiddleLine(canvas, ctx);
+        //     drawBall(ctx, refBall.current);
+        // } else {
+        //     //Game over
+        //     drawGameOver(ctx, winCondition.winner);
+        // }
 
-        //Draw the paddles
-        const paddlePlayer1 = refPaddlePlayer1.current;
-        const paddlePlayer2 = refPaddlePlayer2.current;
+        // //Draw score
+        // drawScore(ctx, refGame.current.score);
 
-        drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
+        // //Draw the paddles
+        // const paddlePlayer1 = refPaddlePlayer1.current;
+        // const paddlePlayer2 = refPaddlePlayer2.current;
+
+        // drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
         
-        drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
+        // drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
     }
 
     return(
