@@ -41,7 +41,7 @@ const Pong = () => {
         y: WINDOW_HEIGHT / 2,
         height: PADDLE_HEIGHT,
         width: PADDLE_WIDTH,
-        velocity: 10,
+        velocity: 4,
     })
 
     const refWinCondition = useRef({
@@ -148,10 +148,9 @@ const Pong = () => {
         const paddlePlayer2 = refPaddlePlayer2.current;
 
         if(ball.position.x > WINDOW_WIDTH / 2) {
-            paddlePlayer2.y = ball.position.y
-        } else {
-            paddlePlayer2.y = WINDOW_HEIGHT / 2
-        }
+            ball.position.y > paddlePlayer2.y ? paddlePlayer2.y += paddlePlayer2.velocity
+                                              : paddlePlayer2.y -= paddlePlayer2.velocity;
+        } 
     }
 
     const update = () => {
