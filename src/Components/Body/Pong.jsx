@@ -116,7 +116,7 @@ const Pong = () => {
                 }
                 break;
             case keys.player1Down:
-                if(paddlePlayer1.y + paddlePlayer1.height/2 < WINDOW_HEIGHT){
+                if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
                     paddlePlayer1.y += paddlePlayer1.velocity;
                 } else {
                     paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
