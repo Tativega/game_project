@@ -41,7 +41,7 @@ const Pong = () => {
         y: WINDOW_HEIGHT / 2,
         height: PADDLE_HEIGHT,
         width: PADDLE_WIDTH,
-        velocity: 10,
+        velocity: 4,
     })
 
     const refWinCondition = useRef({
@@ -159,6 +159,17 @@ const Pong = () => {
         window.requestAnimationFrame(gameLoop)
     }
 
+    const paddleAuto = () => {
+        const ball = refBall.current;
+
+        const paddlePlayer2 = refPaddlePlayer2.current;
+
+        if(ball.position.x > WINDOW_WIDTH / 2) {
+            ball.position.y > paddlePlayer2.y ? paddlePlayer2.y += paddlePlayer2.velocity
+                                              : paddlePlayer2.y -= paddlePlayer2.velocity;
+        } 
+    }
+
     const update = () => {
         const ball = refBall.current;
         const score = refGame.current.score;
@@ -223,10 +234,11 @@ const Pong = () => {
             ball.position.y + ball.radius >= paddlePlayer1.y - paddlePlayer1.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
+
                 let paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
-                let addedSpeed = paddleZone * 15;
+                let addedSpeed = paddleZone * 15
                 //Is the top half of the paddle (1) or the bottom one (-1)
-                let sign = paddlePlayer1.y - ball.position.y >= 0 ? -1 : 1;
+                const sign = paddlePlayer1.y - ball.position.y >= 0 ? -1 : 1;
                 //The angle is 45 in the extreme of the paddle (paddleZone = 1)
                 //The angle is 0 in the center of the paddle (paddleZone = 0)
                 let angle = paddleZone * Math.PI / 2.5;
