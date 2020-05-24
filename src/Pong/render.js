@@ -17,8 +17,12 @@ export const drawGameOver = (ctx, winner) => {
 export const drawMenu = (ctx) => {
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText("Start Game", 0.35 * WINDOW_WIDTH, WINDOW_HEIGHT / 2)
-    //ctx.rect(0.35 * WINDOW_WIDTH, 0.45 * WINDOW_HEIGHT, 153, 30); Start Game hit box
+
+    ctx.fillText("Start Game", 0.5 * WINDOW_WIDTH, 0.4 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+
+    ctx.fillText("Settings", 0.5 * WINDOW_WIDTH, 0.6 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
 } 
 
 export const drawMiddleLine = (canvas, ctx) => {
@@ -44,3 +48,14 @@ export const drawScore = (ctx, score) => {
     ctx.fillText(score.player1, WINDOW_WIDTH / 2 - 70 , 50);
     ctx.fillText(score.player2, WINDOW_WIDTH / 2 + 50 , 50);
 }
+
+export const drawSettings = (ctx) => {
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+
+    ctx.fillText("Configure Keyboard", 0.5 * WINDOW_WIDTH, 0.4 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+
+    ctx.fillText("Use Mouse", 0.5 * WINDOW_WIDTH, 0.6 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+} 
