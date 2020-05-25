@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 
-import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING} from "../../Pong/constants";
+import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED,SPEED_INCREASE} from "../../Pong/constants";
 import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore } from "../../Pong/render";
 import { paddleAuto, updateBall } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
@@ -14,8 +14,9 @@ const Pong = () => {
             player1 : 0,
             player2 : 0,
         },
-        ballSpeed : 4,
+        ballSpeed : BALL_SPEED,
         screen: "menu", //menu - game - gameover
+   
     })
 
     const refBall = useRef({
@@ -168,17 +169,20 @@ const Pong = () => {
         const  initialPosition = WINDOW_HEIGHT / 2 - 50 + Math.random() * 100; 
         const angle = Math.random() * Math.PI / 4;
         const sign = Math.random()< 0.5 ? -1 : 1;
-
+      
         if(ball.position.x <= 0){
             score.player2++;
+            refGame.current.ballSpeed = BALL_SPEED;
             ball.position.x = WINDOW_WIDTH / 2;
             ball.position.y = initialPosition;
             ball.velocity.x = -speed * Math.cos(angle);
             ball.velocity.y = sign * speed * Math.sin(angle);
+            
         }
 
         if(ball.position.x >= WINDOW_WIDTH){
             score.player1++;
+            refGame.current.ballSpeed = BALL_SPEED;
             ball.position.x = WINDOW_WIDTH / 2;
             ball.position.y = WINDOW_HEIGHT / 2;
             ball.velocity.x = speed * Math.cos(angle);
@@ -218,6 +222,8 @@ const Pong = () => {
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
 
+                refGame.current.ballSpeed = refGame.current.ballSpeed + SPEED_INCREASE; 
+               
                 let paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
                 let addedSpeed = paddleZone * 15
                 //Is the top half of the paddle (1) or the bottom one (-1)
@@ -235,7 +241,7 @@ const Pong = () => {
             ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
-                
+                refGame.current.ballSpeed = refGame.current.ballSpeed + SPEED_INCREASE; 
                 let paddleZone = Math.abs(paddlePlayer2.y - ball.position.y) / (paddlePlayer2.height / 2);
         
                 //Is the top half of the paddle (1) or the bottom one (-1)
