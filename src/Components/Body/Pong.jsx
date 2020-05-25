@@ -58,15 +58,15 @@ const Pong = () => {
         const canvas = canvasRef.current;
 
         if(canvas){
-            const screen = refGame.current.screen;
+            let screen = refGame.current.screen;
             const ctx = canvas.getContext('2d');
             const rect = ctx.canvas.getBoundingClientRect();
             const x = clientX - rect.left;
             const y = clientY - rect.top;
+            ctx.font = "30px Arial";
+            const fontHeight = parseInt(ctx.font) * 0.8; 
 
-            if(screen === "menu") {               
-                ctx.font = "30px Arial";
-                const fontHeight = parseInt(ctx.font) * 0.8; 
+            if(screen === "menu") {                   
                 const startWidth = ctx.measureText("Start Game").width;
                 const settingsWidth = ctx.measureText("Settings").width;
 
@@ -84,6 +84,18 @@ const Pong = () => {
                     y < 0.6 * WINDOW_HEIGHT){
                     //Settings
                     refGame.current.screen = "settings";
+                }
+            }
+
+            if(screen === "settings") {     
+                const backWidth = ctx.measureText("Start Game").width;
+            
+                if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + backWidth) &&
+                    y > 0.9 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.9 * WINDOW_HEIGHT){
+                    //Menu
+                    refGame.current.screen = "menu";
                 }
             }
         }
