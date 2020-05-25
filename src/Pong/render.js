@@ -51,11 +51,24 @@ export const drawScore = (ctx, score) => {
 
 export const drawSettings = (ctx) => {
     ctx.font = "30px Arial";
+    
+    ctx.fillStyle = "yellow";
+    ctx.fillText("Keyboard", 0.35 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
     ctx.fillStyle = "white";
-
-    ctx.fillText("Configure Keyboard", 0.5 * WINDOW_WIDTH, 0.4 * WINDOW_HEIGHT)
+    ctx.fillText("Mouse", 0.65 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+    
+    ctx.fillText("Configure Keyboard", 0.5 * WINDOW_WIDTH, 0.45 * WINDOW_HEIGHT)
     ctx.textAlign = "center";
 
-    ctx.fillText("Use Mouse", 0.5 * WINDOW_WIDTH, 0.6 * WINDOW_HEIGHT)
+    ctx.fillStyle = "yellow";
+    ctx.fillText("1 Player", 0.35 * WINDOW_WIDTH, 0.65 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+    ctx.fillStyle = "white";
+    ctx.fillText("2 Players", 0.65 * WINDOW_WIDTH, 0.65 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+
+    ctx.fillText("Back", 0.5 * WINDOW_WIDTH, 0.9 * WINDOW_HEIGHT)
     ctx.textAlign = "center";
 } 
