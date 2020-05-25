@@ -1,4 +1,4 @@
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../Pong/constants";
+import { WINDOW_HEIGHT } from "../Pong/constants";
 
 export const paddleAuto = (ball, paddle) => {
     if(ball.velocity.x > 0) {
