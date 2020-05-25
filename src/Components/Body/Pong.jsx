@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING} from "../../Pong/constants";
-import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore } from "../../Pong/render";
+import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings } from "../../Pong/render";
 import { paddleAuto, updateBall } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
 
@@ -15,7 +15,7 @@ const Pong = () => {
             player2 : 0,
         },
         ballSpeed : 4,
-        screen: "menu", //menu - game - gameover
+        screen: "menu", //menu - settings - game - gameover
     })
 
     const refBall = useRef({
@@ -56,7 +56,7 @@ const Pong = () => {
 
     window.addEventListener("click", ({clientX, clientY}) => {
         const canvas = canvasRef.current;
-        
+
         if(canvas){
             const screen = refGame.current.screen;
             const ctx = canvas.getContext('2d');
@@ -64,9 +64,27 @@ const Pong = () => {
             const x = clientX - rect.left;
             const y = clientY - rect.top;
 
-            if(screen === "menu" && x > 0.35 * WINDOW_WIDTH && x < 0.35 * WINDOW_WIDTH + 153 && y > 0.45 * WINDOW_HEIGHT && y < 0.45 * WINDOW_HEIGHT + 30){
-                //Start Game
-                refGame.current.screen = "game";
+            if(screen === "menu") {               
+                ctx.font = "30px Arial";
+                const fontHeight = parseInt(ctx.font) * 0.8; 
+                const startWidth = ctx.measureText("Start Game").width;
+                const settingsWidth = ctx.measureText("Settings").width;
+
+                if( x > 0.5 * (WINDOW_WIDTH - startWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + startWidth) &&
+                    y > 0.4 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.4 * WINDOW_HEIGHT){
+                    //Start Game
+                    refGame.current.screen = "game";
+                }
+
+                if( x > 0.5 * (WINDOW_WIDTH - settingsWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + settingsWidth) &&
+                    y > 0.6 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.6 * WINDOW_HEIGHT){
+                    //Settings
+                    refGame.current.screen = "settings";
+                }
             }
         }
     })
@@ -128,7 +146,6 @@ const Pong = () => {
     })
 
     useEffect( () => {
-
         window.requestAnimationFrame(gameLoop)
     },[])
 
@@ -261,6 +278,9 @@ const Pong = () => {
         switch(screen){
             case "menu":
                 drawMenu(ctx);
+                break;
+            case "settings":
+                drawSettings(ctx);
                 break;
             case "game":
                 //Draw the middle segmented line and ball
