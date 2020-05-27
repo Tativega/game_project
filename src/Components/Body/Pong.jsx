@@ -140,6 +140,20 @@ const Pong = () => {
                     refSettings.current.players = 2;
                 };
             }
+
+            if(screen === "keyboard") {
+                const backWidth = ctx.measureText("back").width;
+                const upWidth = ctx.measureText("up").width;
+                const downWidth = ctx.measureText("down").width;
+
+                if( x > 0.65 * (WINDOW_WIDTH - backWidth) && 
+                    x < 0.65 * (WINDOW_WIDTH + backWidth) &&
+                    y > 0.65 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.65 * WINDOW_HEIGHT){
+                    //Choose 2 players
+                    refSettings.current.players = 2;
+                };
+            }
         }
     });
 
