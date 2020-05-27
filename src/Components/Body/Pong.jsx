@@ -63,6 +63,15 @@ const Pong = () => {
 
     window.addEventListener("click", ({clientX, clientY}) => {
         const canvas = canvasRef.current;
+        const keys = refSettings.current.keys;
+
+
+        if(keys.player1Up === "" || 
+            keys.player2Up === "" || 
+            keys.player1Down === "" || 
+            keys.player2Down === ""){
+                return null;
+            };
 
         if(canvas){
             let screen = refGame.current.screen;
@@ -156,13 +165,42 @@ const Pong = () => {
                 const upWidth = ctx.measureText("up").width;
                 const downWidth = ctx.measureText("down").width;
 
-                if( x > 0.65 * (WINDOW_WIDTH - backWidth) && 
-                    x < 0.65 * (WINDOW_WIDTH + backWidth) &&
-                    y > 0.65 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.65 * WINDOW_HEIGHT){
-                    //Choose 2 players
-                    refSettings.current.players = 2;
+                // Go back to Settings
+                if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + backWidth) &&
+                    y > 0.9 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.9 * WINDOW_HEIGHT){
+                    
+                    refGame.current.screen = "settings";
                 };
+
+                // Set 'up' keys
+                if( x > 0.35 * (WINDOW_WIDTH - upWidth) && 
+                    x < 0.35 * (WINDOW_WIDTH + upWidth)){
+                        if( y > 0.35 * WINDOW_HEIGHT - fontHeight &&
+                            y < 0.35 * WINDOW_HEIGHT){
+                                refSettings.current.keys.player1Up = "";
+                            }
+  
+                        if( y > 0.70 * WINDOW_HEIGHT - fontHeight &&
+                            y < 0.70 * WINDOW_HEIGHT){
+                                refSettings.current.keys.player2Up = "";
+                            }
+                };
+
+                // Set 'down' keys
+                if( x > 0.35 * (WINDOW_WIDTH - downWidth) && 
+                x < 0.35 * (WINDOW_WIDTH + downWidth)){
+                    if( y > 0.40 * WINDOW_HEIGHT - fontHeight &&
+                        y < 0.40 * WINDOW_HEIGHT){
+                            refSettings.current.keys.player1Down = "";
+                        }
+
+                    if( y > 0.75 * WINDOW_HEIGHT - fontHeight &&
+                        y < 0.75 * WINDOW_HEIGHT){
+                            refSettings.current.keys.player2Down = "";
+                        }
+            };
             }
         }
     });
@@ -201,8 +239,12 @@ const Pong = () => {
                 winner:"",
             }
         }
-        
-        console.log(event.key)
+
+        if(keys.player1Up === "") refSettings.current.keys.player1Up = event.key;
+        if(keys.player2Up === "") refSettings.current.keys.player2Up = event.key;
+        if(keys.player1Down === "") refSettings.current.keys.player1Down = event.key;
+        if(keys.player2Down === "") refSettings.current.keys.player2Down = event.key;
+
         switch(event.key) {
             case keys.player1Up:
                 if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
