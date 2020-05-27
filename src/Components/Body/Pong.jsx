@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED,SPEED_INCREASE} from "../../Pong/constants";
 import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings } from "../../Pong/render";
-import { paddleAuto, updateBall } from "../../Pong/update";
+import { updateBall } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
 
 const Pong = () => {
@@ -48,12 +48,16 @@ const Pong = () => {
     const refWinCondition = useRef({
         gameOver : false,
         winner:"",
-    })
+    });
 
-    const keys = {
-        player1Up: "ArrowUp",
-        player1Down: "ArrowDown",
-    }
+    const refSettings = useRef({
+        control: "keyboard",
+        keys : {
+            player1Up: "ArrowUp",
+            player1Down: "ArrowDown",
+        },
+        players: 1,
+    });
 
     window.addEventListener("click", ({clientX, clientY}) => {
         const canvas = canvasRef.current;
@@ -90,6 +94,11 @@ const Pong = () => {
 
             if(screen === "settings") {     
                 const backWidth = ctx.measureText("Start Game").width;
+                const keyboardWidth = ctx.measureText("Keyboard").width;
+                const mouseWidth = ctx.measureText("Mouse").width;
+                const onePlayerWidth = ctx.measureText("1 Player").width;
+                const twoPlayersWidth = ctx.measureText("2 Player").width;
+                console.log("click")
             
                 if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
                     x < 0.5 * (WINDOW_WIDTH + backWidth) &&
@@ -98,14 +107,46 @@ const Pong = () => {
                     //Menu
                     refGame.current.screen = "menu";
                 }
+
+                if( x > 0.35 * (WINDOW_WIDTH - keyboardWidth) && 
+                    x < 0.35 * (WINDOW_WIDTH + keyboardWidth) &&
+                    y > 0.25 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.25 * WINDOW_HEIGHT){
+                    //Choose keyboard
+                    refSettings.current.control = "keyboard";
+                };
+
+                if( x > 0.65 * (WINDOW_WIDTH - mouseWidth) && 
+                    x < 0.65 * (WINDOW_WIDTH + mouseWidth) &&
+                    y > 0.25 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.25 * WINDOW_HEIGHT){
+                    //Choose mouse
+                    refSettings.current.control = "mouse";
+                };
+
+                if( x > 0.35 * (WINDOW_WIDTH - onePlayerWidth) && 
+                    x < 0.35 * (WINDOW_WIDTH + onePlayerWidth) &&
+                    y > 0.65 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.65 * WINDOW_HEIGHT){
+                    //Choose 1 player
+                    refSettings.current.players = 1;
+                };
+
+                if( x > 0.65 * (WINDOW_WIDTH - twoPlayersWidth) && 
+                    x < 0.65 * (WINDOW_WIDTH + twoPlayersWidth) &&
+                    y > 0.65 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.65 * WINDOW_HEIGHT){
+                    //Choose 2 players
+                    refSettings.current.players = 2;
+                };
             }
         }
-    })
+    });
 
     window.addEventListener("keydown", (event) => {
         const paddlePlayer1 = refPaddlePlayer1.current;
-        const paddlePlayer2 = refPaddlePlayer2.current;
         const gameOver = refWinCondition.current.gameOver;
+        const keys = refSettings.current.keys;
 
         if(gameOver){
             // resetting the game
