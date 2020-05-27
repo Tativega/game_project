@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED,SPEED_INCREASE} from "../../Pong/constants";
-import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings } from "../../Pong/render";
+import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings, drawKeyboard } from "../../Pong/render";
 import { updateBall } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
 
@@ -15,7 +15,7 @@ const Pong = () => {
             player2 : 0,
         },
         ballSpeed : BALL_SPEED,
-        screen: "menu", //menu - settings - game - gameover
+        screen: "menu", //menu - settings - keyboard - game - gameover
    
     })
 
@@ -55,6 +55,8 @@ const Pong = () => {
         keys : {
             player1Up: "ArrowUp",
             player1Down: "ArrowDown",
+            player2Up: "w",
+            player2Down: "s",
         },
         players: 1,
     });
@@ -98,7 +100,7 @@ const Pong = () => {
                 const mouseWidth = ctx.measureText("Mouse").width;
                 const onePlayerWidth = ctx.measureText("1 Player").width;
                 const twoPlayersWidth = ctx.measureText("2 Player").width;
-                console.log("click")
+                const keysWidth = ctx.measureText("Configure Keyboard").width;
             
                 if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
                     x < 0.5 * (WINDOW_WIDTH + backWidth) &&
@@ -114,6 +116,14 @@ const Pong = () => {
                     y < 0.25 * WINDOW_HEIGHT){
                     //Choose keyboard
                     refSettings.current.control = "keyboard";
+                };
+
+                if( x > 0.5 * (WINDOW_WIDTH - keysWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + keysWidth) &&
+                    y > 0.45 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.45 * WINDOW_HEIGHT){
+                    //Go to keyboard settings
+                    refGame.current.screen = "keyboard";
                 };
 
                 if( x > 0.65 * (WINDOW_WIDTH - mouseWidth) && 
@@ -178,7 +188,7 @@ const Pong = () => {
             }
         }
         
-
+        console.log(event.key)
         switch(event.key) {
             case keys.player1Up:
                 if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
@@ -340,6 +350,9 @@ const Pong = () => {
                 break;
             case "settings":
                 drawSettings(ctx);
+                break;
+            case "keyboard":
+                drawKeyboard(ctx, refSettings.current.keys);
                 break;
             case "game":
                 //Draw the middle segmented line and ball
