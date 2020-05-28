@@ -9,9 +9,9 @@ export const drawBall = (ctx, ball) => {
 
 export const drawGameOver = (ctx, winner) => {
     ctx.font = "60px Arial";
-    ctx.fillText(winner + " wins!", WINDOW_WIDTH / 6, WINDOW_HEIGHT / 2);
+    ctx.fillText(winner + " wins!", 0.5 * WINDOW_WIDTH, 0.4 * WINDOW_HEIGHT);
     ctx.font = "30px Arial";
-    ctx.fillText("Press any key to restart the game", WINDOW_WIDTH / 6, WINDOW_HEIGHT / 2 + 30);
+    ctx.fillText("Press any key to restart the game", 0.5 * WINDOW_WIDTH, 0.6 * WINDOW_HEIGHT);
 }
 
 export const drawMenu = (ctx) => {
