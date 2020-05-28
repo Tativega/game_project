@@ -2,8 +2,10 @@ import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED,SPEED_INCREASE} from "../../Pong/constants";
 import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings, drawKeyboard } from "../../Pong/render";
-import { updateBall } from "../../Pong/update";
+import { update } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
+
+// console.log(update)
 
 const Pong = () => {
 
@@ -207,10 +209,10 @@ const Pong = () => {
 
     window.addEventListener("keydown", (event) => {
         const paddlePlayer1 = refPaddlePlayer1.current;
-        const gameOver = refWinCondition.current.gameOver;
+        // const gameOver = refWinCondition.current.gameOver;
         const keys = refSettings.current.keys;
 
-        if(gameOver){
+        if(refGame.current.screen === "gameOver"){
             // resetting the game
             refGame.current = {
                 score: {
@@ -237,6 +239,11 @@ const Pong = () => {
             refWinCondition.current = {
                 gameOver : false,
                 winner:"",
+            }
+
+            if(event.key) {
+                refGame.current.screen = "game"
+                update(refBall, refGame, refPaddlePlayer2, refWinCondition);
             }
         }
 
@@ -271,7 +278,8 @@ const Pong = () => {
 
     const gameLoop = (timestamp) => {
         if(refGame.current.screen === "game"){
-            update();
+            // update();
+            update(refBall, refGame, refPaddlePlayer2, refWinCondition);
             detectCollision();
         }
         draw();
@@ -290,56 +298,60 @@ const Pong = () => {
         } 
     }
 
-    const update = () => {
-        const ball = refBall.current;
-        const score = refGame.current.score;
-        const speed = refGame.current.ballSpeed;
-        const paddlePlayer2 = refPaddlePlayer2.current;
-        const winCondition = refWinCondition.current;
-        
-        updateBall(refBall.current)
-        
-        paddleAuto(ball, paddlePlayer2);
+    // update(refBall, refGame, refPaddlePlayer2, refWinCondition);
+    // const update = () => {
+    //     const ball = refBall.current;
+    //     const score = refGame.current.score;
+    //     const speed = refGame.current.ballSpeed;
+    //     const paddlePlayer2 = refPaddlePlayer2.current;
+    //     const winCondition = refWinCondition.current;
 
-        //Update score and reset ball position and velocity
-        const  initialPosition = WINDOW_HEIGHT / 2 - 50 + Math.random() * 100; 
-        const angle = Math.random() * Math.PI / 4;
-        const sign = Math.random()< 0.5 ? -1 : 1;
+        
+    //     updateBall(refBall.current)
+        
+    //     paddleAuto(ball, paddlePlayer2);
+
+    //     //Update score and reset ball position and velocity
+    //     const  initialPosition = WINDOW_HEIGHT / 2 - 50 + Math.random() * 100; 
+    //     const angle = Math.random() * Math.PI / 4;
+    //     const sign = Math.random()< 0.5 ? -1 : 1;
       
-        if(ball.position.x <= 0){
-            score.player2++;
-            refGame.current.ballSpeed = BALL_SPEED;
-            ball.position.x = WINDOW_WIDTH / 2;
-            ball.position.y = initialPosition;
-            ball.velocity.x = -speed * Math.cos(angle);
-            ball.velocity.y = sign * speed * Math.sin(angle);
+    //     if(ball.position.x <= 0){
+    //         score.player2++;
+    //         refGame.current.ballSpeed = BALL_SPEED;
+    //         ball.position.x = WINDOW_WIDTH / 2;
+    //         ball.position.y = initialPosition;
+    //         ball.velocity.x = -speed * Math.cos(angle);
+    //         ball.velocity.y = sign * speed * Math.sin(angle);
             
-        }
+    //     }
 
-        if(ball.position.x >= WINDOW_WIDTH){
-            score.player1++;
-            refGame.current.ballSpeed = BALL_SPEED;
-            ball.position.x = WINDOW_WIDTH / 2;
-            ball.position.y = WINDOW_HEIGHT / 2;
-            ball.velocity.x = speed * Math.cos(angle);
-            ball.velocity.y = sign * speed * Math.sin(angle);
-        }
+    //     if(ball.position.x >= WINDOW_WIDTH){
+    //         score.player1++;
+    //         refGame.current.ballSpeed = BALL_SPEED;
+    //         ball.position.x = WINDOW_WIDTH / 2;
+    //         ball.position.y = WINDOW_HEIGHT / 2;
+    //         ball.velocity.x = speed * Math.cos(angle);
+    //         ball.velocity.y = sign * speed * Math.sin(angle);
+    //     }
 
-        //Check if winning condition achieved;
-        if(score.player1 > 10 && score.player1 > score.player2 + 1){
-            winCondition.gameOver = true;
-            winCondition.winner = "Player 1";
-            ball.velocity.x = 0;
-            ball.velocity.y = 0;
-        }
+    //     //Check if winning condition achieved;
+    //     if(score.player1 > 3 && score.player1 > score.player2 + 1){
+    //         winCondition.gameOver = true;
+    //         refGame.current.screen = "gameOver";
+    //         winCondition.winner = "Player 1";
+    //         ball.velocity.x = 0;
+    //         ball.velocity.y = 0;
+    //     }
 
-        if(score.player2 > 10 && score.player2 > score.player1 + 1){
-            winCondition.gameOver = true;
-            winCondition.winner = "Player 2";
-            ball.velocity.x = 0;
-            ball.velocity.y = 0;
-        }
-    }
+    //     if(score.player2 > 3 && score.player2 > score.player1 + 1){
+    //         winCondition.gameOver = true;
+    //         refGame.current.screen = "gameOver";
+    //         winCondition.winner = "Player 2";
+    //         ball.velocity.x = 0;
+    //         ball.velocity.y = 0;
+    //     }
+    // }
 
     const detectCollision = () => {
         const ball = refBall.current;
