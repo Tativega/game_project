@@ -72,3 +72,39 @@ export const drawSettings = (ctx) => {
     ctx.fillText("Back", 0.5 * WINDOW_WIDTH, 0.9 * WINDOW_HEIGHT)
     ctx.textAlign = "center";
 } 
+
+export const drawKeyboard = (ctx, keys) => {
+    // Player 1
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Player 1", 0.25 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "yellow";
+    ctx.fillText("Up:", 0.35 * WINDOW_WIDTH, 0.35 * WINDOW_HEIGHT)
+    ctx.fillStyle = "white";
+    ctx.fillText(keys.player1Up, 0.60 * WINDOW_WIDTH, 0.35 * WINDOW_HEIGHT)
+    ctx.fillStyle = "yellow";
+    ctx.fillText("Down:", 0.35 * WINDOW_WIDTH, 0.40 * WINDOW_HEIGHT)
+    ctx.fillStyle = "white";
+    ctx.fillText(keys.player1Down, 0.60 * WINDOW_WIDTH, 0.40 * WINDOW_HEIGHT)
+
+    // Player 2
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Player 2", 0.25 * WINDOW_WIDTH, 0.60 * WINDOW_HEIGHT)
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "yellow";
+    ctx.fillText("Up:", 0.35 * WINDOW_WIDTH, 0.70 * WINDOW_HEIGHT)
+    ctx.fillStyle = "white";
+    ctx.fillText(keys.player2Up, 0.60 * WINDOW_WIDTH, 0.70 * WINDOW_HEIGHT)
+    ctx.fillStyle = "yellow"
+    ctx.fillText("Down:", 0.35 * WINDOW_WIDTH, 0.75 * WINDOW_HEIGHT);
+    ctx.fillStyle = "white";
+    ctx.fillText(keys.player2Down, 0.60 * WINDOW_WIDTH, 0.75 * WINDOW_HEIGHT)
+
+    //Back
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Back", 0.5 * WINDOW_WIDTH, 0.9 * WINDOW_HEIGHT)
+    ctx.textAlign = "center";
+}

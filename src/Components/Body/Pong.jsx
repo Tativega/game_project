@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
 import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED,SPEED_INCREASE} from "../../Pong/constants";
-import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings } from "../../Pong/render";
+import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings, drawKeyboard } from "../../Pong/render";
 import { updateBall } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
 
@@ -15,7 +15,7 @@ const Pong = () => {
             player2 : 0,
         },
         ballSpeed : BALL_SPEED,
-        screen: "menu", //menu - settings - game - gameover
+        screen: "menu", //menu - settings - keyboard - game - gameover
    
     })
 
@@ -55,12 +55,23 @@ const Pong = () => {
         keys : {
             player1Up: "ArrowUp",
             player1Down: "ArrowDown",
+            player2Up: "w",
+            player2Down: "s",
         },
         players: 1,
     });
 
     window.addEventListener("click", ({clientX, clientY}) => {
         const canvas = canvasRef.current;
+        const keys = refSettings.current.keys;
+
+
+        if(keys.player1Up === "" || 
+            keys.player2Up === "" || 
+            keys.player1Down === "" || 
+            keys.player2Down === ""){
+                return null;
+            };
 
         if(canvas){
             let screen = refGame.current.screen;
@@ -98,7 +109,7 @@ const Pong = () => {
                 const mouseWidth = ctx.measureText("Mouse").width;
                 const onePlayerWidth = ctx.measureText("1 Player").width;
                 const twoPlayersWidth = ctx.measureText("2 Player").width;
-                console.log("click")
+                const keysWidth = ctx.measureText("Configure Keyboard").width;
             
                 if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
                     x < 0.5 * (WINDOW_WIDTH + backWidth) &&
@@ -114,6 +125,14 @@ const Pong = () => {
                     y < 0.25 * WINDOW_HEIGHT){
                     //Choose keyboard
                     refSettings.current.control = "keyboard";
+                };
+
+                if( x > 0.5 * (WINDOW_WIDTH - keysWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + keysWidth) &&
+                    y > 0.45 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.45 * WINDOW_HEIGHT){
+                    //Go to keyboard settings
+                    refGame.current.screen = "keyboard";
                 };
 
                 if( x > 0.65 * (WINDOW_WIDTH - mouseWidth) && 
@@ -139,6 +158,49 @@ const Pong = () => {
                     //Choose 2 players
                     refSettings.current.players = 2;
                 };
+            }
+
+            if(screen === "keyboard") {
+                const backWidth = ctx.measureText("back").width;
+                const upWidth = ctx.measureText("up").width;
+                const downWidth = ctx.measureText("down").width;
+
+                // Go back to Settings
+                if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + backWidth) &&
+                    y > 0.9 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.9 * WINDOW_HEIGHT){
+                    
+                    refGame.current.screen = "settings";
+                };
+
+                // Set 'up' keys
+                if( x > 0.35 * (WINDOW_WIDTH - upWidth) && 
+                    x < 0.35 * (WINDOW_WIDTH + upWidth)){
+                        if( y > 0.35 * WINDOW_HEIGHT - fontHeight &&
+                            y < 0.35 * WINDOW_HEIGHT){
+                                refSettings.current.keys.player1Up = "";
+                            }
+  
+                        if( y > 0.70 * WINDOW_HEIGHT - fontHeight &&
+                            y < 0.70 * WINDOW_HEIGHT){
+                                refSettings.current.keys.player2Up = "";
+                            }
+                };
+
+                // Set 'down' keys
+                if( x > 0.35 * (WINDOW_WIDTH - downWidth) && 
+                x < 0.35 * (WINDOW_WIDTH + downWidth)){
+                    if( y > 0.40 * WINDOW_HEIGHT - fontHeight &&
+                        y < 0.40 * WINDOW_HEIGHT){
+                            refSettings.current.keys.player1Down = "";
+                        }
+
+                    if( y > 0.75 * WINDOW_HEIGHT - fontHeight &&
+                        y < 0.75 * WINDOW_HEIGHT){
+                            refSettings.current.keys.player2Down = "";
+                        }
+            };
             }
         }
     });
@@ -177,7 +239,11 @@ const Pong = () => {
                 winner:"",
             }
         }
-        
+
+        if(keys.player1Up === "") refSettings.current.keys.player1Up = event.key;
+        if(keys.player2Up === "") refSettings.current.keys.player2Up = event.key;
+        if(keys.player1Down === "") refSettings.current.keys.player1Down = event.key;
+        if(keys.player2Down === "") refSettings.current.keys.player2Down = event.key;
 
         switch(event.key) {
             case keys.player1Up:
@@ -340,6 +406,9 @@ const Pong = () => {
                 break;
             case "settings":
                 drawSettings(ctx);
+                break;
+            case "keyboard":
+                drawKeyboard(ctx, refSettings.current.keys);
                 break;
             case "game":
                 //Draw the middle segmented line and ball
