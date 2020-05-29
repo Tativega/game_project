@@ -210,6 +210,7 @@ const Pong = () => {
         const paddlePlayer1 = refPaddlePlayer1.current;
         // const gameOver = refWinCondition.current.gameOver;
         const keys = refSettings.current.keys;
+        const gameMode = refSettings.current.control;
 
         if(refGame.current.screen === "gameOver"){
             // resetting the game
@@ -251,26 +252,36 @@ const Pong = () => {
         if(keys.player1Down === "") refSettings.current.keys.player1Down = event.key;
         if(keys.player2Down === "") refSettings.current.keys.player2Down = event.key;
 
-        switch(event.key) {
-            case keys.player1Up:
-                if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
-                    paddlePlayer1.y -= paddlePlayer1.velocity;
-                } else {
-                    paddlePlayer1.y = paddlePlayer1.height/2;
-                }
-                break;
-            case keys.player1Down:
-                if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
-                    paddlePlayer1.y += paddlePlayer1.velocity;
-                } else {
-                    paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
-                }
-                break;
-            default:
-                break;
-        }
-    })
+        if(gameMode === "keyboard"){
+            switch(event.key) {
+                case keys.player1Up:
+                    if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                        paddlePlayer1.y -= paddlePlayer1.velocity;
+                    } else {
+                        paddlePlayer1.y = paddlePlayer1.height/2;
+                    }
+                    break;
+                case keys.player1Down:
+                    if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
+                        paddlePlayer1.y += paddlePlayer1.velocity;
+                    } else {
+                        paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        };
+    });
 
+    window.addEventListener('mousemove', (event)=>{
+        const gameMode = refSettings.current.control;
+        const paddlePlayer1Y = refPaddlePlayer1.current.y
+        if(gameMode === "mouse"){
+            event.clientY > paddlePlayer1Y ? refPaddlePlayer1.current.y += refPaddlePlayer1.current.velocity
+                                           : refPaddlePlayer1.current.y -= refPaddlePlayer1.current.velocity
+        }
+    });
     useEffect( () => {
         window.requestAnimationFrame(gameLoop)
     },[])
