@@ -276,12 +276,21 @@ const Pong = () => {
 
     window.addEventListener('mousemove', (event)=>{
         const gameMode = refSettings.current.control;
-        const paddlePlayer1Y = refPaddlePlayer1.current.y
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        let direction;
         if(gameMode === "mouse"){
-            event.clientY > paddlePlayer1Y ? refPaddlePlayer1.current.y += refPaddlePlayer1.current.velocity
-                                           : refPaddlePlayer1.current.y -= refPaddlePlayer1.current.velocity
+            event.clientY > paddlePlayer1.y ? direction = "down" 
+                                           : direction = "up" 
+            console.log(event.clientY, paddlePlayer1.y, direction)
+            if(direction === "up" && paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                refPaddlePlayer1.current.y -= refPaddlePlayer1.current.velocity;
+            };
+            if(direction === "down" && paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT - paddlePlayer1.velocity){
+                refPaddlePlayer1.current.y += refPaddlePlayer1.current.velocity;
+            }
         }
     });
+
     useEffect( () => {
         window.requestAnimationFrame(gameLoop)
     },[])
