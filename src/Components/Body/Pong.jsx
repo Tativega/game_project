@@ -53,6 +53,7 @@ const Pong = () => {
 
     const refSettings = useRef({
         control: "keyboard",
+        mouse: "none",
         keys : {
             player1Up: "ArrowUp",
             player1Down: "ArrowDown",
@@ -126,6 +127,7 @@ const Pong = () => {
                     y < 0.25 * WINDOW_HEIGHT){
                     //Choose keyboard
                     refSettings.current.control = "keyboard";
+                    refPaddlePlayer1.current.velocity = 10;
                 };
 
                 if( x > 0.5 * (WINDOW_WIDTH - keysWidth) && 
@@ -142,6 +144,7 @@ const Pong = () => {
                     y < 0.25 * WINDOW_HEIGHT){
                     //Choose mouse
                     refSettings.current.control = "mouse";
+                    refPaddlePlayer1.current.velocity = 5;
                 };
 
                 if( x > 0.35 * (WINDOW_WIDTH - onePlayerWidth) && 
@@ -277,17 +280,8 @@ const Pong = () => {
     window.addEventListener('mousemove', (event)=>{
         const gameMode = refSettings.current.control;
         const paddlePlayer1 = refPaddlePlayer1.current;
-        let direction;
         if(gameMode === "mouse"){
-            event.clientY > paddlePlayer1.y ? direction = "down" 
-                                           : direction = "up" 
-            console.log(event.clientY, paddlePlayer1.y, direction)
-            if(direction === "up" && paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
-                refPaddlePlayer1.current.y -= refPaddlePlayer1.current.velocity;
-            };
-            if(direction === "down" && paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT - paddlePlayer1.velocity){
-                refPaddlePlayer1.current.y += refPaddlePlayer1.current.velocity;
-            }
+            refSettings.current.mouse = event.clientY;
         }
     });
 
@@ -297,6 +291,7 @@ const Pong = () => {
 
     const gameLoop = (timestamp) => {
         if(refGame.current.screen === "game"){
+            detectMouseDirection();
             update(refBall, refGame, refPaddlePlayer2, refWinCondition);
             detectCollision();
         }
@@ -305,7 +300,20 @@ const Pong = () => {
         window.requestAnimationFrame(gameLoop)
     }
 
-
+    const detectMouseDirection = () => {
+        const gameMode = refSettings.current.control;
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        const mouseY = refSettings.current.mouse;
+        
+        if(gameMode === "mouse"){
+            if(mouseY > paddlePlayer1.y && paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT - paddlePlayer1.velocity){
+                refPaddlePlayer1.current.y += refPaddlePlayer1.current.velocity;
+            };
+            if(mouseY < paddlePlayer1.y && paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                refPaddlePlayer1.current.y -= refPaddlePlayer1.current.velocity; 
+            } 
+        };
+    }
 
     const detectCollision = () => {
         const ball = refBall.current;
