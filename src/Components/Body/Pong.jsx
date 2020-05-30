@@ -63,10 +63,10 @@ const Pong = () => {
         players: 1,
     });
 
-    window.addEventListener("click", ({clientX, clientY}) => {
+    window.addEventListener("click", (event) => {
         const canvas = canvasRef.current;
         const keys = refSettings.current.keys;
-
+        const {clientX, clientY} = event;
 
         if(keys.player1Up === "" || 
             keys.player2Up === "" || 
@@ -204,7 +204,11 @@ const Pong = () => {
                         y < 0.75 * WINDOW_HEIGHT){
                             refSettings.current.keys.player2Down = "";
                         }
-            };
+                };
+            }
+
+            if(screen === "gameOver"){
+                resetGame(event);
             }
         }
     });
@@ -216,38 +220,7 @@ const Pong = () => {
         const gameMode = refSettings.current.control;
 
         if(refGame.current.screen === "gameOver"){
-            // resetting the game
-            refGame.current = {
-                score: {
-                    player1 : 0,
-                    player2 : 0,
-                },
-                ballSpeed : BALL_SPEED,
-            };
-
-            refBall.current = {
-                position: {
-                    x: WINDOW_WIDTH / 2,
-                    y: WINDOW_HEIGHT / 2,
-                },
-                velocity: {
-                    x: -refGame.current.ballSpeed * Math.cos(Math.PI / 4),
-                    y: -refGame.current.ballSpeed * Math.sin(Math.PI / 4),
-                },
-                radius: 5,
-            };
-
-            refPaddlePlayer1.current.y = WINDOW_HEIGHT / 2;
-            refPaddlePlayer2.current.y = WINDOW_HEIGHT / 2;
-
-            refWinCondition.current = {
-                gameOver : false,
-                winner:"",
-            }
-
-            if(event.key) {
-                refGame.current.screen = "game"
-            }
+            resetGame(event);
         }
 
         if(keys.player1Up === "") refSettings.current.keys.player1Up = event.key;
@@ -298,6 +271,41 @@ const Pong = () => {
         draw();
 
         window.requestAnimationFrame(gameLoop)
+    }
+
+    const resetGame = (event) => {
+        // resetting the game
+        refGame.current = {
+            score: {
+                player1 : 0,
+                player2 : 0,
+            },
+            ballSpeed : BALL_SPEED,
+        };
+
+        refBall.current = {
+            position: {
+                x: WINDOW_WIDTH / 2,
+                y: WINDOW_HEIGHT / 2,
+            },
+            velocity: {
+                x: -refGame.current.ballSpeed * Math.cos(Math.PI / 4),
+                y: -refGame.current.ballSpeed * Math.sin(Math.PI / 4),
+            },
+            radius: 5,
+        };
+
+        refPaddlePlayer1.current.y = WINDOW_HEIGHT / 2;
+        refPaddlePlayer2.current.y = WINDOW_HEIGHT / 2;
+
+        refWinCondition.current = {
+            gameOver : false,
+            winner:"",
+        }
+
+        if(event.key || event.type === "click") {
+            refGame.current.screen = "game"
+        }
     }
 
     const detectMouseDirection = () => {
