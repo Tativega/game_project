@@ -53,6 +53,7 @@ const Pong = () => {
 
     const refSettings = useRef({
         control: "keyboard",
+        mouse: "none",
         keys : {
             player1Up: "ArrowUp",
             player1Down: "ArrowDown",
@@ -126,6 +127,7 @@ const Pong = () => {
                     y < 0.25 * WINDOW_HEIGHT){
                     //Choose keyboard
                     refSettings.current.control = "keyboard";
+                    refPaddlePlayer1.current.velocity = 10;
                 };
 
                 if( x > 0.5 * (WINDOW_WIDTH - keysWidth) && 
@@ -142,6 +144,7 @@ const Pong = () => {
                     y < 0.25 * WINDOW_HEIGHT){
                     //Choose mouse
                     refSettings.current.control = "mouse";
+                    refPaddlePlayer1.current.velocity = 5;
                 };
 
                 if( x > 0.35 * (WINDOW_WIDTH - onePlayerWidth) && 
@@ -210,6 +213,7 @@ const Pong = () => {
         const paddlePlayer1 = refPaddlePlayer1.current;
         // const gameOver = refWinCondition.current.gameOver;
         const keys = refSettings.current.keys;
+        const gameMode = refSettings.current.control;
 
         if(refGame.current.screen === "gameOver"){
             // resetting the game
@@ -251,25 +255,35 @@ const Pong = () => {
         if(keys.player1Down === "") refSettings.current.keys.player1Down = event.key;
         if(keys.player2Down === "") refSettings.current.keys.player2Down = event.key;
 
-        switch(event.key) {
-            case keys.player1Up:
-                if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
-                    paddlePlayer1.y -= paddlePlayer1.velocity;
-                } else {
-                    paddlePlayer1.y = paddlePlayer1.height/2;
-                }
-                break;
-            case keys.player1Down:
-                if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
-                    paddlePlayer1.y += paddlePlayer1.velocity;
-                } else {
-                    paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
-                }
-                break;
-            default:
-                break;
+        if(gameMode === "keyboard"){
+            switch(event.key) {
+                case keys.player1Up:
+                    if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                        paddlePlayer1.y -= paddlePlayer1.velocity;
+                    } else {
+                        paddlePlayer1.y = paddlePlayer1.height/2;
+                    }
+                    break;
+                case keys.player1Down:
+                    if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
+                        paddlePlayer1.y += paddlePlayer1.velocity;
+                    } else {
+                        paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        };
+    });
+
+    window.addEventListener('mousemove', (event)=>{
+        const gameMode = refSettings.current.control;
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        if(gameMode === "mouse"){
+            refSettings.current.mouse = event.clientY;
         }
-    })
+    });
 
     useEffect( () => {
         window.requestAnimationFrame(gameLoop)
@@ -277,6 +291,7 @@ const Pong = () => {
 
     const gameLoop = (timestamp) => {
         if(refGame.current.screen === "game"){
+            detectMouseDirection();
             update(refBall, refGame, refPaddlePlayer2, refWinCondition);
             detectCollision();
         }
@@ -285,7 +300,20 @@ const Pong = () => {
         window.requestAnimationFrame(gameLoop)
     }
 
-
+    const detectMouseDirection = () => {
+        const gameMode = refSettings.current.control;
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        const mouseY = refSettings.current.mouse;
+        
+        if(gameMode === "mouse"){
+            if(mouseY > paddlePlayer1.y && paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT - paddlePlayer1.velocity){
+                refPaddlePlayer1.current.y += refPaddlePlayer1.current.velocity;
+            };
+            if(mouseY < paddlePlayer1.y && paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                refPaddlePlayer1.current.y -= refPaddlePlayer1.current.velocity; 
+            } 
+        };
+    }
 
     const detectCollision = () => {
         const ball = refBall.current;
