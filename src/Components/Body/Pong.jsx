@@ -379,7 +379,7 @@ const Pong = () => {
                 drawMenu(ctx);
                 break;
             case "settings":
-                drawSettings(ctx);
+                drawSettings(ctx, refSettings.current);
                 break;
             case "keyboard":
                 drawKeyboard(ctx, refSettings.current.keys);
