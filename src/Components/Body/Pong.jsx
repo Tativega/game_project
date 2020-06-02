@@ -253,8 +253,11 @@ const Pong = () => {
     window.addEventListener('mousemove', (event)=>{
         const gameMode = refSettings.current.control;
         const paddlePlayer1 = refPaddlePlayer1.current;
+        
         if(gameMode === "mouse"){
-            refSettings.current.mouse = event.clientY;
+            const rect = canvasRef.current.getBoundingClientRect();
+        
+            refSettings.current.mouse = event.clientY - rect.top;
         }
     });
 
