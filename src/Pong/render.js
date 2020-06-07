@@ -1,4 +1,6 @@
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../Pong/constants";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, KEYBOARD_OR_MOUSE_TEXT_Y, CONFIG_KEYBOARD_TEXT_Y,
+	ONE_OR_TWO_PLAYERS_TEXT_Y, BACK_TEXT_Y, CONFIG_BALL_TEXT_Y
+} from "../Pong/constants";
 
 export const drawBall = (ctx, ball) => {
     ctx.fillStyle = "white";
@@ -50,28 +52,32 @@ export const drawScore = (ctx, score) => {
 }
 
 export const drawSettings = (ctx, {control, players}) => {
-    ctx.font = "30px Arial";
-    
-    ctx.fillStyle = control === 'keyboard' ? "yellow" : "white";
-    ctx.fillText("Keyboard", 0.35 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
-    ctx.textAlign = "center";
-    ctx.fillStyle = control === 'mouse' ? "yellow" : "white";
-    ctx.fillText("Mouse", 0.65 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
-    ctx.textAlign = "center";
-    
-    ctx.fillStyle = "white"
-    ctx.fillText("Configure Keyboard", 0.5 * WINDOW_WIDTH, 0.45 * WINDOW_HEIGHT)
-    ctx.textAlign = "center";
+	ctx.font = "30px Arial";
 
-    ctx.fillStyle = players === 1 ? "yellow" : "white";
-    ctx.fillText("1 Player", 0.35 * WINDOW_WIDTH, 0.65 * WINDOW_HEIGHT)
-    ctx.textAlign = "center";
-    ctx.fillStyle = players === 2 ? "yellow" : "white";
-    ctx.fillText("2 Players", 0.65 * WINDOW_WIDTH, 0.65 * WINDOW_HEIGHT)
-    ctx.textAlign = "center";
-
-    ctx.fillText("Back", 0.5 * WINDOW_WIDTH, 0.9 * WINDOW_HEIGHT)
-    ctx.textAlign = "center";
+	ctx.fillStyle = "white";
+	ctx.fillText("Configure Ball", 0.5 * WINDOW_WIDTH, CONFIG_BALL_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
+  
+	ctx.fillStyle = control === "keyboard" ? "yellow" : "white";
+	ctx.fillText("Keyboard", 0.35 * WINDOW_WIDTH, KEYBOARD_OR_MOUSE_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
+	ctx.fillStyle = control === "mouse" ? "yellow" : "white";
+	ctx.fillText("Mouse", 0.65 * WINDOW_WIDTH, KEYBOARD_OR_MOUSE_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
+  
+	ctx.fillStyle = "white";
+	ctx.fillText("Configure Keyboard", 0.5 * WINDOW_WIDTH, CONFIG_KEYBOARD_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
+  
+	ctx.fillStyle = players === 1 ? "yellow" : "white";
+	ctx.fillText("1 Player", 0.35 * WINDOW_WIDTH, ONE_OR_TWO_PLAYERS_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
+	ctx.fillStyle = players === 2 ? "yellow" : "white";
+	ctx.fillText("2 Players", 0.65 * WINDOW_WIDTH, ONE_OR_TWO_PLAYERS_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
+  
+	ctx.fillText("Back", 0.5 * WINDOW_WIDTH, BACK_TEXT_Y * WINDOW_HEIGHT);
+	ctx.textAlign = "center";
 } 
 
 export const drawKeyboard = (ctx, keys) => {
