@@ -44,9 +44,8 @@ export const updateBall = ball => {
 export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
     const ball = refBall.current;
     const score = refGame.current.score;
-    //const speed = refGame.current.ballSpeed;
     const paddlePlayer2 = refPaddlePlayer2.current;
-    const winCondition = refWinCondition.current;
+	const winCondition = refWinCondition.current;
 
     
     updateBall(refBall.current)
