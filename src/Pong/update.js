@@ -44,7 +44,6 @@ export const updateBall = ball => {
 export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
     const ball = refBall.current;
     const score = refGame.current.score;
-    const speed = refGame.current.ball.speed;
     const paddlePlayer2 = refPaddlePlayer2.current;
 	const winCondition = refWinCondition.current;
 
@@ -60,21 +59,19 @@ export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
   
     if(ball.position.x <= 0){
         score.player2++;
-        refGame.current.ball.speed = BALL_SPEED;
         ball.position.x = WINDOW_WIDTH / 2;
         ball.position.y = initialPosition;
-        ball.velocity.x = -speed * Math.cos(angle);
-        ball.velocity.y = sign * speed * Math.sin(angle);
+        ball.velocity.x = -BALL_SPEED * Math.cos(angle);
+        ball.velocity.y = sign * BALL_SPEED * Math.sin(angle);
         
     }
 
     if(ball.position.x >= WINDOW_WIDTH){
         score.player1++;
-        refGame.current.ball.speed = BALL_SPEED;
         ball.position.x = WINDOW_WIDTH / 2;
         ball.position.y = WINDOW_HEIGHT / 2;
-        ball.velocity.x = speed * Math.cos(angle);
-        ball.velocity.y = sign * speed * Math.sin(angle);
+        ball.velocity.x = BALL_SPEED * Math.cos(angle);
+        ball.velocity.y = sign * BALL_SPEED * Math.sin(angle);
     }
 
     //Check if winning condition achieved;
