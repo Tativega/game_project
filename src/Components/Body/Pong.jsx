@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 
-import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED,SPEED_INCREASE} from "../../Pong/constants";
-import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings, drawKeyboard } from "../../Pong/render";
+import {WINDOW_WIDTH, WINDOW_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_PADDING,BALL_SPEED, KEYBOARD_OR_MOUSE_TEXT_POSITION, CONFIG_KEYBOARD_TEXT_POSITION, ONE_OR_TWO_PLAYERS_TEXT_POSITION, BACK_TEXT_POSITION, CONFIG_BALL_TEXT_POSITION,SPEED_DIFICULTY_TEXT_POSITION,EASY_SPEED_INCREASE,NORMAL_SPEED_INCREASE,HARD_SPEED_INCREASE} from "../../Pong/constants";
+import { drawBall, drawGameOver, drawMenu, drawMiddleLine, drawPaddle, drawScore, drawSettings, drawKeyboard, drawBallSettings } from "../../Pong/render";
 import { update } from "../../Pong/update";
 import { borderCollision } from "../../Pong/collision";
 
@@ -15,8 +15,10 @@ const Pong = () => {
             player1 : 0,
             player2 : 0,
         },
-        ballSpeed : BALL_SPEED,
-        screen: "menu", //menu - settings - keyboard - game - gameover
+        ball: {
+			speed : BALL_SPEED,
+		},
+        screen: "menu", //menu - settings - keyboard - ball - game - gameover 
    
     })
 
@@ -26,8 +28,8 @@ const Pong = () => {
             y: WINDOW_HEIGHT / 2,
         },
         velocity: {
-            x: -refGame.current.ballSpeed * Math.cos(Math.PI / 4),
-            y: -refGame.current.ballSpeed * Math.sin(Math.PI / 4),
+            x: -refGame.current.ball.speed * Math.cos(Math.PI / 4),
+            y: -refGame.current.ball.speed * Math.sin(Math.PI / 4),
         },
         radius: 5, 
     });
@@ -60,7 +62,10 @@ const Pong = () => {
             player2Up: "w",
             player2Down: "s",
         },
-        players: 1,
+		players: 1,
+		ball:{
+			speedDificulty: NORMAL_SPEED_INCREASE //EASY_SPEED_INCREASE - NORMAL_SPEED_INCREASE - HARD_SPEED_INCREASE
+		}
     });
 
     window.addEventListener("click", (event) => {
@@ -86,7 +91,7 @@ const Pong = () => {
 
             if(screen === "menu") {                   
                 const startWidth = ctx.measureText("Start Game").width;
-                const settingsWidth = ctx.measureText("Settings").width;
+				const settingsWidth = ctx.measureText("Settings").width;
 
                 if( x > 0.5 * (WINDOW_WIDTH - startWidth) && 
                     x < 0.5 * (WINDOW_WIDTH + startWidth) &&
@@ -111,20 +116,28 @@ const Pong = () => {
                 const mouseWidth = ctx.measureText("Mouse").width;
                 const onePlayerWidth = ctx.measureText("1 Player").width;
                 const twoPlayersWidth = ctx.measureText("2 Player").width;
-                const keysWidth = ctx.measureText("Configure Keyboard").width;
+				const keysWidth = ctx.measureText("Configure Keyboard").width;
+				
+				if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
+					x < 0.5 * (WINDOW_WIDTH + backWidth) &&
+					y > CONFIG_BALL_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+					y < CONFIG_BALL_TEXT_POSITION * WINDOW_HEIGHT){
+				//Go to ball settings
+				refGame.current.screen = "ball";
+				}
             
                 if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
                     x < 0.5 * (WINDOW_WIDTH + backWidth) &&
-                    y > 0.9 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.9 * WINDOW_HEIGHT){
+                    y > BACK_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+                    y < BACK_TEXT_POSITION * WINDOW_HEIGHT){
                     //Menu
                     refGame.current.screen = "menu";
                 }
 
                 if( x > 0.35 * (WINDOW_WIDTH - keyboardWidth) && 
                     x < 0.35 * (WINDOW_WIDTH + keyboardWidth) &&
-                    y > 0.25 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.25 * WINDOW_HEIGHT){
+                    y > KEYBOARD_OR_MOUSE_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+                    y < KEYBOARD_OR_MOUSE_TEXT_POSITION * WINDOW_HEIGHT){
                     //Choose keyboard
                     refSettings.current.control = "keyboard";
                     refPaddlePlayer1.current.velocity = 10;
@@ -132,16 +145,16 @@ const Pong = () => {
 
                 if( x > 0.5 * (WINDOW_WIDTH - keysWidth) && 
                     x < 0.5 * (WINDOW_WIDTH + keysWidth) &&
-                    y > 0.45 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.45 * WINDOW_HEIGHT){
+                    y > CONFIG_KEYBOARD_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+                    y < CONFIG_KEYBOARD_TEXT_POSITION * WINDOW_HEIGHT){
                     //Go to keyboard settings
                     refGame.current.screen = "keyboard";
                 };
 
                 if( x > 0.65 * (WINDOW_WIDTH - mouseWidth) && 
                     x < 0.65 * (WINDOW_WIDTH + mouseWidth) &&
-                    y > 0.25 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.25 * WINDOW_HEIGHT){
+                    y > KEYBOARD_OR_MOUSE_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+                    y < KEYBOARD_OR_MOUSE_TEXT_POSITION * WINDOW_HEIGHT){
                     //Choose mouse
                     refSettings.current.control = "mouse";
                     refPaddlePlayer1.current.velocity = 5;
@@ -149,16 +162,16 @@ const Pong = () => {
 
                 if( x > 0.35 * (WINDOW_WIDTH - onePlayerWidth) && 
                     x < 0.35 * (WINDOW_WIDTH + onePlayerWidth) &&
-                    y > 0.65 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.65 * WINDOW_HEIGHT){
+                    y > ONE_OR_TWO_PLAYERS_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+                    y < ONE_OR_TWO_PLAYERS_TEXT_POSITION * WINDOW_HEIGHT){
                     //Choose 1 player
                     refSettings.current.players = 1;
                 };
 
                 if( x > 0.65 * (WINDOW_WIDTH - twoPlayersWidth) && 
                     x < 0.65 * (WINDOW_WIDTH + twoPlayersWidth) &&
-                    y > 0.65 * WINDOW_HEIGHT - fontHeight &&
-                    y < 0.65 * WINDOW_HEIGHT){
+                    y > ONE_OR_TWO_PLAYERS_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+                    y < ONE_OR_TWO_PLAYERS_TEXT_POSITION * WINDOW_HEIGHT){
                     //Choose 2 players
                     refSettings.current.players = 2;
                 };
@@ -205,7 +218,47 @@ const Pong = () => {
                             refSettings.current.keys.player2Down = "";
                         }
                 };
-            }
+			}
+			
+			if(screen === "ball") {
+				const backWidth = ctx.measureText("back").width;
+				const easyWidth = ctx.measureText("easy").width;
+				const normalWidth = ctx.measureText("normal").width;
+				const hardWidth = ctx.measureText("hard").width;
+
+				if( x > 0.5 * (WINDOW_WIDTH - easyWidth) && 
+					x < 0.5 * (WINDOW_WIDTH + easyWidth) &&
+					y > SPEED_DIFICULTY_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+					y < SPEED_DIFICULTY_TEXT_POSITION * WINDOW_HEIGHT){
+				refSettings.current.ball.speedDificulty = EASY_SPEED_INCREASE;
+				};
+
+				if( x > 0.7 * (WINDOW_WIDTH - normalWidth) && 
+					x < 0.7 * (WINDOW_WIDTH + normalWidth) &&
+					y > SPEED_DIFICULTY_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+					y < SPEED_DIFICULTY_TEXT_POSITION * WINDOW_HEIGHT){
+			
+				refSettings.current.ball.speedDificulty = NORMAL_SPEED_INCREASE;
+				};
+
+				if( x > 0.9 * (WINDOW_WIDTH - hardWidth) && 
+					x < 0.9 * (WINDOW_WIDTH + hardWidth) &&
+					y > SPEED_DIFICULTY_TEXT_POSITION * WINDOW_HEIGHT - fontHeight &&
+					y < SPEED_DIFICULTY_TEXT_POSITION * WINDOW_HEIGHT){
+				
+				refSettings.current.ball.speedDificulty = HARD_SPEED_INCREASE;
+				};
+
+                // Go back to Settings
+                if( x > 0.5 * (WINDOW_WIDTH - backWidth) && 
+                    x < 0.5 * (WINDOW_WIDTH + backWidth) &&
+                    y > 0.9 * WINDOW_HEIGHT - fontHeight &&
+                    y < 0.9 * WINDOW_HEIGHT){
+                    
+                    refGame.current.screen = "settings";
+                };
+			
+			}
 
             if(screen === "gameOver"){
                 resetGame(event);
@@ -283,7 +336,9 @@ const Pong = () => {
                 player1 : 0,
                 player2 : 0,
             },
-            ballSpeed : BALL_SPEED,
+			ball: {
+				speed : BALL_SPEED,
+				}
         };
 
         refBall.current = {
@@ -292,8 +347,8 @@ const Pong = () => {
                 y: WINDOW_HEIGHT / 2,
             },
             velocity: {
-                x: -refGame.current.ballSpeed * Math.cos(Math.PI / 4),
-                y: -refGame.current.ballSpeed * Math.sin(Math.PI / 4),
+                x: -refGame.current.ball.speed * Math.cos(Math.PI / 4),
+                y: -refGame.current.ball.speed * Math.sin(Math.PI / 4),
             },
             radius: 5,
         };
@@ -328,7 +383,7 @@ const Pong = () => {
 
     const detectCollision = () => {
         const ball = refBall.current;
-        const speed = refGame.current.ballSpeed;
+        const speed = refGame.current.ball.speed;
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
 
@@ -343,7 +398,7 @@ const Pong = () => {
             ball.position.y - ball.radius <= paddlePlayer1.y + paddlePlayer1.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
 
-                refGame.current.ballSpeed = refGame.current.ballSpeed + SPEED_INCREASE; 
+                refGame.current.ball.speed = refGame.current.ball.speed + refSettings.current.ball.speedDificulty; 
                
                 let paddleZone = Math.abs(paddlePlayer1.y - ball.position.y) / (paddlePlayer1.height / 2);
                 let addedSpeed = paddleZone * 15
@@ -362,7 +417,7 @@ const Pong = () => {
             ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
-                refGame.current.ballSpeed = refGame.current.ballSpeed + SPEED_INCREASE; 
+                refGame.current.ball.speed = refGame.current.ball.speed + refSettings.current.ball.speedDificulty; 
                 let paddleZone = Math.abs(paddlePlayer2.y - ball.position.y) / (paddlePlayer2.height / 2);
         
                 //Is the top half of the paddle (1) or the bottom one (-1)
@@ -394,7 +449,10 @@ const Pong = () => {
                 break;
             case "keyboard":
                 drawKeyboard(ctx, refSettings.current.keys);
-                break;
+				break;
+			case "ball":
+				drawBallSettings(ctx, refSettings.current.ball);
+				break;
             case "game":
                 //Draw the middle segmented line and ball
                 drawMiddleLine(canvas, ctx);
