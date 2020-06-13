@@ -20,26 +20,10 @@ export const paddleAuto = (ball, paddle) => {
     }
 }
 
-
-    // const paddleAuto = () => {
-    //     const ball = refBall.current;
-
-    //     const paddlePlayer2 = refPaddlePlayer2.current;
-
-    //     if(ball.position.x > WINDOW_WIDTH / 2) {
-    //         ball.position.y > paddlePlayer2.y ? paddlePlayer2.y += paddlePlayer2.velocity
-    //                                           : paddlePlayer2.y -= paddlePlayer2.velocity;
-    //     } 
-    // }
-
-
-
 export const updateBall = ball => {
     ball.position.x += ball.velocity.x;
     ball.position.y += ball.velocity.y;
 }
-
-
 
 export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
     const ball = refBall.current;
@@ -47,7 +31,6 @@ export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
     const paddlePlayer2 = refPaddlePlayer2.current;
 	const winCondition = refWinCondition.current;
 
-    
     updateBall(refBall.current)
     
     paddleAuto(ball, paddlePlayer2);

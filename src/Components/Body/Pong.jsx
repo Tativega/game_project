@@ -19,7 +19,7 @@ const Pong = () => {
 			speed : BALL_SPEED,
 		},
         screen: "menu", //menu - settings - keyboard - ball - game - gameover 
-   
+        pause: false,
     })
 
     const refBall = useRef({
@@ -61,6 +61,7 @@ const Pong = () => {
             player1Down: "ArrowDown",
             player2Up: "w",
             player2Down: "s",
+            pause: "p",
         },
 		players: 1,
 		ball:{
@@ -281,6 +282,10 @@ const Pong = () => {
         if(keys.player1Down === "") refSettings.current.keys.player1Down = event.key;
         if(keys.player2Down === "") refSettings.current.keys.player2Down = event.key;
 
+        if(event.key.toLowerCase() === keys.pause){
+            pauseGame();
+        }
+
         if(gameMode === "keyboard"){
             switch(event.key) {
                 case keys.player1Up:
@@ -303,6 +308,13 @@ const Pong = () => {
         };
     });
 
+    const pauseGame = () => {
+        refGame.current.pause = !refGame.current.pause;
+        if (!refGame.current.pause){
+            window.requestAnimationFrame(gameLoop) // restart loop
+        }
+    }
+
     window.addEventListener('mousemove', (event)=>{
         const gameMode = refSettings.current.control;
         const paddlePlayer1 = refPaddlePlayer1.current;
@@ -319,6 +331,7 @@ const Pong = () => {
     },[])
 
     const gameLoop = (timestamp) => {
+        if (refGame.current.pause) return; // <--- stop looping
         if(refGame.current.screen === "game"){
             detectMouseDirection();
             update(refBall, refGame, refPaddlePlayer2, refWinCondition);
@@ -433,69 +446,52 @@ const Pong = () => {
 
     const draw = () => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        const screen = refGame.current.screen;
-        const winCondition = refWinCondition.current;
-
-        //Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        switch(screen){
-            case "menu":
-                drawMenu(ctx);
-                break;
-            case "settings":
-                drawSettings(ctx, refSettings.current);
-                break;
-            case "keyboard":
-                drawKeyboard(ctx, refSettings.current.keys);
-				break;
-			case "ball":
-				drawBallSettings(ctx, refSettings.current.ball);
-				break;
-            case "game":
-                //Draw the middle segmented line and ball
-                drawMiddleLine(canvas, ctx);
-                drawBall(ctx, refBall.current);
+        if(canvas){
+            const ctx = canvas.getContext('2d');
+            const screen = refGame.current.screen;
+            const winCondition = refWinCondition.current;
 
-                //Draw score
-                drawScore(ctx, refGame.current.score);
+            //Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            switch(screen){
+                case "menu":
+                    drawMenu(ctx);
+                    break;
+                case "settings":
+                    drawSettings(ctx, refSettings.current);
+                    break;
+                case "keyboard":
+                    drawKeyboard(ctx, refSettings.current.keys);
+                    break;
+                case "ball":
+                    drawBallSettings(ctx, refSettings.current.ball);
+                    break;
+                case "game":
+                    //Draw the middle segmented line and ball
+                    drawMiddleLine(canvas, ctx);
+                    drawBall(ctx, refBall.current);
 
-                //Draw the paddles
-                const paddlePlayer1 = refPaddlePlayer1.current;
-                const paddlePlayer2 = refPaddlePlayer2.current;
+                    //Draw score
+                    drawScore(ctx, refGame.current.score);
 
-                drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
-                
-                drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
+                    //Draw the paddles
+                    const paddlePlayer1 = refPaddlePlayer1.current;
+                    const paddlePlayer2 = refPaddlePlayer2.current;
 
-                break;
-            case "gameOver":
-                drawGameOver(ctx, winCondition.winner);
-                break
-            default:
-                break;
+                    drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
+                    
+                    drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
+
+                    break;
+                case "gameOver":
+                    drawGameOver(ctx, winCondition.winner);
+                    break
+                default:
+                    break;
+            }
         }
-
-        // if(!winCondition.gameOver){
-        //     //Draw the middle segmented line and ball
-        //     drawMiddleLine(canvas, ctx);
-        //     drawBall(ctx, refBall.current);
-        // } else {
-        //     //Game over
-        //     drawGameOver(ctx, winCondition.winner);
-        // }
-
-        // //Draw score
-        // drawScore(ctx, refGame.current.score);
-
-        // //Draw the paddles
-        // const paddlePlayer1 = refPaddlePlayer1.current;
-        // const paddlePlayer2 = refPaddlePlayer2.current;
-
-        // drawPaddle(ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
-        
-        // drawPaddle(ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
     }
 
     return(
