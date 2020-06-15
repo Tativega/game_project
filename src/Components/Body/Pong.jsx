@@ -61,6 +61,12 @@ const Pong = () => {
 		},
         screen: "menu", //menu - settings - keyboard - ball - game - gameover 
         pause: false,
+        playArea: {
+            width: 600,
+            height: 400,
+            scaleX: 1,
+            scaleY: 1,
+        }
     })
 
     const refWinCondition = useRef({
@@ -87,6 +93,7 @@ const Pong = () => {
     const resizeGame = () => {
         const gameArea = gameAreaRef.current;
         const canvas = canvasRef.current;
+        const playArea = refGame.current.playArea;
 
         if(gameArea && canvas){
             const widthToHeight = 4 / 3;
@@ -112,11 +119,13 @@ const Pong = () => {
     
             canvas.width = newWidth;
             canvas.height = newHeight;
+
+            playArea.scaleX = newWidth / playArea.width;
+            playArea.scaleY = newHeight / playArea.height;
         }
     }
 
     /* Listeners */
-
     window.addEventListener('resize', resizeGame, false);
     window.addEventListener('orientationchange', resizeGame, false);
 
@@ -322,7 +331,7 @@ const Pong = () => {
         const paddlePlayer1 = refPaddlePlayer1.current;
         const keys = refSettings.current.keys;
         const gameMode = refSettings.current.control;
-        const canvas = canvasRef.current;
+        const playArea = refGame.current.playArea;
 
         if(refGame.current.screen === "gameOver"){
             resetGame(event);
@@ -347,10 +356,10 @@ const Pong = () => {
                     }
                     break;
                 case keys.player1Down:
-                    if(paddlePlayer1.y + paddlePlayer1.height/2 <= canvas.height - paddlePlayer1.velocity){
+                    if(paddlePlayer1.y + paddlePlayer1.height/2 <= playArea.height - paddlePlayer1.velocity){
                         paddlePlayer1.y += paddlePlayer1.velocity;
                     } else {
-                        paddlePlayer1.y = (canvas.height - paddlePlayer1.height/2);
+                        paddlePlayer1.y = (playArea.height - paddlePlayer1.height/2);
                     }
                     break;
                 default:
@@ -382,45 +391,43 @@ const Pong = () => {
     },[])
 
     const gameLoop = (timestamp) => {
-        const canvas = canvasRef.current;
-        if (refGame.current.pause) return; // <--- stop looping
-        if(refGame.current.screen === "game"){
+        const { pause, screen, playArea } = refGame.current;
+        if (pause) return; // <--- stop looping
+        if(screen === "game"){
             detectMouseDirection();
-            update(canvas, refBall, refGame, refPaddlePlayer2, refWinCondition);
+            update( refBall, refGame, refPaddlePlayer2, refWinCondition);
             detectCollision();
         }
-        draw();
+        draw(playArea);
 
         window.requestAnimationFrame(gameLoop)
     }
 
     const resetGame = (event) => {
-        const canvas = canvasRef.current;
+        const { playArea , ball } = refGame.current;
         // resetting the game
-        refGame.current = {
-            score: {
+        refGame.current.score = {
                 player1 : 0,
                 player2 : 0,
-            },
-			ball: {
+        }
+        refGame.current.ball = {
 				speed : BALL_SPEED,
-			}
-        };
+            }
 
         refBall.current = {
             position: {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
+                x: playArea.width / 2,
+                y: playArea.height / 2,
             },
             velocity: {
-                x: -refGame.current.ball.speed * Math.cos(Math.PI / 4),
-                y: -refGame.current.ball.speed * Math.sin(Math.PI / 4),
+                x: -ball.speed * Math.cos(Math.PI / 4),
+                y: -ball.speed * Math.sin(Math.PI / 4),
             },
             radius: 5,
         };
 
-        refPaddlePlayer1.current.y = canvas.height / 2;
-        refPaddlePlayer2.current.y = canvas.height / 2;
+        refPaddlePlayer1.current.y = playArea.height / 2;
+        refPaddlePlayer2.current.y = playArea.height / 2;
 
         refWinCondition.current = {
             gameOver : false,
@@ -453,10 +460,10 @@ const Pong = () => {
         const speed = refGame.current.ball.speed;
         const paddlePlayer1 = refPaddlePlayer1.current;
         const paddlePlayer2 = refPaddlePlayer2.current;
-        const canvas = canvasRef.current;
+        const { playArea } = refGame.current;
 
         //Top and bottom collision
-        borderCollision(refBall.current, canvasRef.current);
+        borderCollision(refBall.current, playArea);
 
         //Paddle collision
         if(ball.position.x - ball.radius <= PADDLE_PADDING + paddlePlayer1.width &&
@@ -479,8 +486,8 @@ const Pong = () => {
                 ball.position.x = PADDLE_PADDING + paddlePlayer1.width + ball.radius;
         }
 
-        if(ball.position.x - ball.radius <= canvas.width - PADDLE_PADDING &&
-            ball.position.x + ball.radius >= canvas.width - PADDLE_PADDING - paddlePlayer2.width &&
+        if(ball.position.x - ball.radius <= playArea.width - PADDLE_PADDING &&
+            ball.position.x + ball.radius >= playArea.width - PADDLE_PADDING - paddlePlayer2.width &&
             ball.position.y + ball.radius >= paddlePlayer2.y - paddlePlayer2.height / 2 &&
             ball.position.y - ball.radius <= paddlePlayer2.y + paddlePlayer2.height / 2){
                 //Zone of impact on the paddle, value between 0 and 1
@@ -494,13 +501,13 @@ const Pong = () => {
                 let angle = paddleZone * Math.PI / 4;
                 ball.velocity.x = - speed * Math.cos(angle);
                 ball.velocity.y = sign * speed * Math.sin(angle);
-                ball.position.x = canvas.width - PADDLE_PADDING - paddlePlayer2.width - ball.radius;
+                ball.position.x = playArea.width - PADDLE_PADDING - paddlePlayer2.width - ball.radius;
         }
     }
 
-    const draw = () => {
+    const draw = ( playArea ) => {
         const canvas = canvasRef.current;
-        
+
         if(canvas){
             const ctx = canvas.getContext('2d');
             const screen = refGame.current.screen;
@@ -524,8 +531,8 @@ const Pong = () => {
                     break;
                 case "game":
                     //Draw the middle segmented line and ball
-                    drawMiddleLine(canvas, ctx);
-                    drawBall(canvas, ctx, refBall.current);
+                    drawMiddleLine(canvas, ctx, playArea);
+                    drawBall(canvas, ctx, refBall.current, playArea);
 
                     //Draw score
                     drawScore(canvas, ctx, refGame.current.score);
@@ -534,9 +541,9 @@ const Pong = () => {
                     const paddlePlayer1 = refPaddlePlayer1.current;
                     const paddlePlayer2 = refPaddlePlayer2.current;
 
-                    drawPaddle(canvas, ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2);
+                    drawPaddle(canvas, ctx, paddlePlayer1, PADDLE_PADDING, paddlePlayer1.y-paddlePlayer1.height/2, playArea);
                     
-                    drawPaddle(canvas, ctx, paddlePlayer2, canvas.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2);
+                    drawPaddle(canvas, ctx, paddlePlayer2, playArea.width-PADDLE_PADDING-paddlePlayer2.width, paddlePlayer2.y-paddlePlayer2.height/2, playArea);
 
                     break;
                 case "gameOver":

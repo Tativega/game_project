@@ -3,10 +3,10 @@ import { KEYBOARD_OR_MOUSE_TEXT_POSITION, CONFIG_KEYBOARD_TEXT_POSITION,
 	EASY_SPEED_INCREASE,NORMAL_SPEED_INCREASE,HARD_SPEED_INCREASE
 } from "../Pong/constants";
 
-export const drawBall = (canvas, ctx, ball) => {
+export const drawBall = (canvas, ctx, ball, { scaleX, scaleY }) => {
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, 2 * Math.PI);
+    ctx.arc(scaleX * ball.position.x, scaleY * ball.position.y, scaleX * ball.radius, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -28,20 +28,20 @@ export const drawMenu = (canvas, ctx) => {
     ctx.textAlign = "center";
 } 
 
-export const drawMiddleLine = (canvas, ctx) => {
+export const drawMiddleLine = (canvas, ctx, { scaleX, scaleY }) => {
     ctx.strokeStyle = "white";
-    ctx.lineWidth = 10;
-    ctx.setLineDash([20, 15]);
+    ctx.lineWidth = scaleX * 10;
+    ctx.setLineDash([scaleY * 20, scaleY * 15]);
     ctx.beginPath();
     ctx.moveTo(canvas.width/2, 0);
     ctx.lineTo(canvas.width/2, canvas.height);
     ctx.stroke();
 }
 
-export const drawPaddle = (canvas, ctx, paddle, x, y) => {
+export const drawPaddle = (canvas, ctx, paddle, x, y, { scaleX, scaleY }) => {
     ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.rect(x, y, paddle.width, paddle.height);
+    ctx.rect(scaleX * x, scaleY * y, scaleX * paddle.width, scaleY * paddle.height);
     ctx.fill();
     ctx.closePath();
 }
