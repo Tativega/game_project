@@ -92,7 +92,7 @@ const Pong = () => {
             const y = clientY - rect.top;
             ctx.font = "30px Arial";
             const fontHeight = parseInt(ctx.font) * 0.8; 
-console.log(screen)
+
             if(screen === "menu") {                   
                 const startWidth = ctx.measureText("Start Game").width;
 				const settingsWidth = ctx.measureText("Settings").width;
