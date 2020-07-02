@@ -20,36 +20,34 @@ export const paddleAuto = (ball, paddle) => {
     }
 }
 
-
-    // const paddleAuto = () => {
-    //     const ball = refBall.current;
-
-    //     const paddlePlayer2 = refPaddlePlayer2.current;
-
-    //     if(ball.position.x > WINDOW_WIDTH / 2) {
-    //         ball.position.y > paddlePlayer2.y ? paddlePlayer2.y += paddlePlayer2.velocity
-    //                                           : paddlePlayer2.y -= paddlePlayer2.velocity;
-    //     } 
-    // }
-
-
-
 export const updateBall = ball => {
     ball.position.x += ball.velocity.x;
     ball.position.y += ball.velocity.y;
 }
 
-
-
-export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
-    const ball = refBall.current;
-    const score = refGame.current.score;
-    const paddlePlayer2 = refPaddlePlayer2.current;
-	const winCondition = refWinCondition.current;
-
+export const update = (ball, refGame,  paddlePlayer1, paddlePlayer2, winCondition, {control}) => {
+    const {score} = refGame.current;
     
-    updateBall(refBall.current)
+    updateBall(ball)
     
+    //Update paddle
+    if(control === "keyboard"){
+        if(paddlePlayer1.key.up){
+            if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                paddlePlayer1.y -= paddlePlayer1.velocity;
+            } else {
+                paddlePlayer1.y = paddlePlayer1.height/2;
+            }
+        }   
+        if(paddlePlayer1.key.down){
+            if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
+                paddlePlayer1.y += paddlePlayer1.velocity;
+            } else {
+                paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
+            }
+        }
+    };
+
     paddleAuto(ball, paddlePlayer2);
 
     //Update score and reset ball position and velocity
