@@ -69,6 +69,36 @@ const Pong = () => {
         }
     })
 
+    const refBall = useRef({
+        position: {
+            x: WINDOW_WIDTH / 2,
+            y: WINDOW_HEIGHT / 2,
+        },
+        velocity: {
+            x: -refGame.current.ball.speed * Math.cos(Math.PI / 4),
+            y: -refGame.current.ball.speed * Math.sin(Math.PI / 4),
+        },
+        radius: 5, 
+    });
+
+    const refPaddlePlayer1 = useRef({
+        y: WINDOW_HEIGHT / 2,
+        height: PADDLE_HEIGHT,
+        width: PADDLE_WIDTH,
+        velocity: 10,
+        key: {
+            up: false,
+            down: false,
+        },
+    })
+
+    const refPaddlePlayer2 = useRef({
+        y: WINDOW_HEIGHT / 2,
+        height: PADDLE_HEIGHT,
+        width: PADDLE_WIDTH,
+        velocity: 4,
+    })
+
     const refWinCondition = useRef({
         gameOver : false,
         winner:"",
@@ -349,11 +379,7 @@ const Pong = () => {
         if(gameMode === "keyboard" && paddlePlayer1){
             switch(event.key) {
                 case keys.player1Up:
-                    if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
-                        paddlePlayer1.y -= paddlePlayer1.velocity;
-                    } else {
-                        paddlePlayer1.y = paddlePlayer1.height/2;
-                    }
+                    paddlePlayer1.key.up = true;
                     break;
                 case keys.player1Down:
                     if(paddlePlayer1.y + paddlePlayer1.height/2 <= playArea.height - paddlePlayer1.velocity){
@@ -361,6 +387,7 @@ const Pong = () => {
                     } else {
                         paddlePlayer1.y = (playArea.height - paddlePlayer1.height/2);
                     }
+                    paddlePlayer1.key.down = true;
                     break;
                 default:
                     break;
@@ -374,6 +401,25 @@ const Pong = () => {
             window.requestAnimationFrame(gameLoop) // restart loop
         }
     }
+    
+    window.addEventListener("keyup", (event) => {
+        const paddlePlayer1 = refPaddlePlayer1.current;
+        const keys = refSettings.current.keys;
+        const gameMode = refSettings.current.control;
+
+        if(gameMode === "keyboard"){
+            switch(event.key) {
+                case keys.player1Up:
+                    paddlePlayer1.key.up = false;
+                    break;
+                case keys.player1Down:
+                    paddlePlayer1.key.down = false;
+                    break;
+                default:
+                    break;
+            }
+        };
+    })
 
     window.addEventListener('mousemove', (event)=>{
         const gameMode = refSettings.current.control;
@@ -395,7 +441,7 @@ const Pong = () => {
         if (pause) return; // <--- stop looping
         if(screen === "game"){
             detectMouseDirection();
-            update( refBall, refGame, refPaddlePlayer2, refWinCondition);
+            update(refBall.current, refGame, refPaddlePlayer1.current, refPaddlePlayer2.current, refWinCondition.current, refSettings.current);
             detectCollision();
         }
         draw(playArea);

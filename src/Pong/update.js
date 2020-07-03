@@ -33,7 +33,25 @@ export const update = ( refBall, refGame, refPaddlePlayer2, refWinCondition) => 
 
     updateBall(refBall.current)
     
-    paddleAuto(playArea, ball, paddlePlayer2);
+    //Update paddle
+    if(control === "keyboard"){
+        if(paddlePlayer1.key.up){
+            if(paddlePlayer1.y - paddlePlayer1.height/2 >= paddlePlayer1.velocity){
+                paddlePlayer1.y -= paddlePlayer1.velocity;
+            } else {
+                paddlePlayer1.y = paddlePlayer1.height/2;
+            }
+        }   
+        if(paddlePlayer1.key.down){
+            if(paddlePlayer1.y + paddlePlayer1.height/2 <= WINDOW_HEIGHT-paddlePlayer1.velocity){
+                paddlePlayer1.y += paddlePlayer1.velocity;
+            } else {
+                paddlePlayer1.y = (WINDOW_HEIGHT - paddlePlayer1.height/2);
+            }
+        }
+    };
+
+    paddleAuto(ball, paddlePlayer2);
 
     //Update score and reset ball position and velocity
     const  initialPosition = playArea.height / 2 - 50 + Math.random() * 100; 
