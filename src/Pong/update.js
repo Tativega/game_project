@@ -25,10 +25,13 @@ export const updateBall = ball => {
     ball.position.y += ball.velocity.y;
 }
 
-export const update = (ball, refGame,  paddlePlayer1, paddlePlayer2, winCondition, {control}) => {
-    const {score} = refGame.current;
-    
-    updateBall(ball)
+export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
+    const ball = refBall.current;
+    const score = refGame.current.score;
+    const paddlePlayer2 = refPaddlePlayer2.current;
+	const winCondition = refWinCondition.current;
+
+    updateBall(refBall.current)
     
     //Update paddle
     if(control === "keyboard"){
