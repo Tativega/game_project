@@ -1,6 +1,3 @@
-//Screen
-export const WINDOW_WIDTH = 640;
-export const WINDOW_HEIGHT = 480;
 
 //Paddle
 export const PADDLE_WIDTH = 10;

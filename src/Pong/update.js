@@ -1,6 +1,6 @@
-import { WINDOW_HEIGHT, WINDOW_WIDTH, BALL_SPEED } from "../Pong/constants";
+import { BALL_SPEED } from "../Pong/constants";
 
-export const paddleAuto = (ball, paddle) => {
+export const paddleAuto = ({ height: gameHeight }, ball, paddle) => {
     if(ball.velocity.x > 0) {
         if(Math.abs(ball.position.y - paddle.y) < paddle.velocity){
             paddle.y = ball.position.y;
@@ -10,9 +10,9 @@ export const paddleAuto = (ball, paddle) => {
             paddle.y -= paddle.velocity;
         }
     } else {
-        if(Math.abs(paddle.y - WINDOW_HEIGHT / 2) < paddle.velocity){
-            paddle.y = WINDOW_HEIGHT / 2;
-        } else if(paddle.y > WINDOW_HEIGHT / 2){
+        if(Math.abs(paddle.y - gameHeight / 2) < paddle.velocity){
+            paddle.y = gameHeight / 2;
+        } else if(paddle.y > gameHeight / 2){
             paddle.y -= paddle.velocity;
         } else {
             paddle.y += paddle.velocity;
@@ -25,9 +25,9 @@ export const updateBall = ball => {
     ball.position.y += ball.velocity.y;
 }
 
-export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
+export const update = ( refBall, refGame, refPaddlePlayer2, refWinCondition) => {
     const ball = refBall.current;
-    const score = refGame.current.score;
+    const { playArea, score } = refGame.current;
     const paddlePlayer2 = refPaddlePlayer2.current;
 	const winCondition = refWinCondition.current;
 
@@ -54,23 +54,23 @@ export const update = (refBall, refGame, refPaddlePlayer2, refWinCondition) => {
     paddleAuto(ball, paddlePlayer2);
 
     //Update score and reset ball position and velocity
-    const  initialPosition = WINDOW_HEIGHT / 2 - 50 + Math.random() * 100; 
+    const  initialPosition = playArea.height / 2 - 50 + Math.random() * 100; 
     const angle = Math.random() * Math.PI / 4;
     const sign = Math.random()< 0.5 ? -1 : 1;
   
     if(ball.position.x <= 0){
         score.player2++;
-        ball.position.x = WINDOW_WIDTH / 2;
+        ball.position.x = playArea.width / 2;
         ball.position.y = initialPosition;
         ball.velocity.x = -BALL_SPEED * Math.cos(angle);
         ball.velocity.y = sign * BALL_SPEED * Math.sin(angle);
         
     }
 
-    if(ball.position.x >= WINDOW_WIDTH){
+    if(ball.position.x >= playArea.width){
         score.player1++;
-        ball.position.x = WINDOW_WIDTH / 2;
-        ball.position.y = WINDOW_HEIGHT / 2;
+        ball.position.x = playArea.width / 2;
+        ball.position.y = playArea.height / 2;
         ball.velocity.x = BALL_SPEED * Math.cos(angle);
         ball.velocity.y = sign * BALL_SPEED * Math.sin(angle);
     }
